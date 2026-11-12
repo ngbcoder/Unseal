@@ -215,41 +215,41 @@ and the legal stance.
 
 ---
 
-## M2 — Persistence
+## M2 — Persistence · DONE
 
-- [ ] `internal/db` — `Book` document — marketing metadata, delivery type, soft-delete flag
-- [ ] `internal/db` — `Component` document — one physical part of a multi-part book
-- [ ] `internal/db` — `Conversion` document — the download/decrypt/export unit of work
-- [ ] `internal/db` — `ChapterInfo` document — brand intro/outro, runtime, accuracy flag
-- [ ] `internal/db` — `Chapter` document — nested via a parent reference
-- [ ] `internal/db` — `Series` document — with the three orderings
-- [ ] `internal/db` — `Author` and `Narrator` documents — unique ASIN, may lack one
-- [ ] `internal/db` — `Genre` document — with the category ladder
-- [ ] `internal/db` — `EConversionState` — 16 states, **ordinal order is semantically meaningful**
-- [ ] `internal/db` — `ECodec`, `EDeliveryType`, `EDownloadQuality` types
-- [ ] `internal/db` — open the bbolt database, create the buckets, enable the file lock
-- [ ] `internal/db` — bucket layout: `meta`, `profiles`, `accounts/<id>-<region>/books`, `accounts/<id>-<region>/conversions`
-- [ ] `internal/db` — document encoding — one serialisation format, versioned
-- [ ] `internal/db` — read a book document by ASIN
-- [ ] `internal/db` — upsert a book document, preserving the conversion state of an existing entry
-- [ ] `internal/db` — upsert the components of a book
-- [ ] `internal/db` — upsert the conversions of a book
-- [ ] `internal/db` — list every book of one account and region
-- [ ] `internal/db` — list every conversion of one account and region
-- [ ] `internal/db` — write the conversion state
-- [ ] `internal/db` — write the licence key and IV onto the owning book or component
-- [ ] `internal/db` — write the download file name, including the `_Mono`/`_Stereo` suffix
-- [ ] `internal/db` — write the exported `.aax` path of a conversion, which the handoff to AAX Audio Converter reads
-- [ ] `internal/db` — write the chapter tree
-- [ ] `internal/db` — write the series ordering onto the book document
-- [ ] `internal/db` — `ApplicableState` — resolve the transient `download` state to the persisted one
-- [ ] `internal/db` — `ApplicableDownloadQuality` — minimum quality across components
-- [ ] `internal/db` — multi-part book state = minimum of its components' states
-- [ ] `internal/db` — soft delete and re-add semantics
-- [ ] `internal/db` — pseudo-ASIN allocation for people without one
-- [ ] `internal/db` — merge duplicate author entries, preferring the real long ASIN
-- [ ] `internal/db` — copy the database file before a destructive change
-- [ ] `internal/db` — tests: document round-trip, tenancy isolation, aggregation, chapter tree, state transitions
+- [x] `internal/db` — `Book` document — marketing metadata, delivery type, soft-delete flag
+- [x] `internal/db` — `Component` document — one physical part of a multi-part book
+- [x] `internal/db` — `Conversion` document — the download/decrypt/export unit of work
+- [x] `internal/db` — `ChapterInfo` document — brand intro/outro, runtime, accuracy flag
+- [x] `internal/db` — `Chapter` document — nested via a parent reference
+- [x] `internal/db` — `Series` document — with the three orderings
+- [x] `internal/db` — `Author` and `Narrator` documents — unique ASIN, may lack one
+- [x] `internal/db` — `Genre` document — with the category ladder
+- [x] `internal/db` — `EConversionState` — 16 states, **ordinal order is semantically meaningful**
+- [x] `internal/db` — `ECodec`, `EDeliveryType`, `EDownloadQuality` types
+- [x] `internal/db` — open the bbolt database, create the buckets, enable the file lock
+- [x] `internal/db` — bucket layout: `meta`, `profiles`, `accounts/<id>-<region>/books`, `accounts/<id>-<region>/conversions`
+- [x] `internal/db` — document encoding — one serialisation format, versioned
+- [x] `internal/db` — read a book document by ASIN
+- [x] `internal/db` — upsert a book document, preserving the conversion state of an existing entry
+- [x] `internal/db` — upsert the components of a book
+- [x] `internal/db` — upsert the conversions of a book
+- [x] `internal/db` — list every book of one account and region
+- [x] `internal/db` — list every conversion of one account and region
+- [x] `internal/db` — write the conversion state
+- [x] `internal/db` — write the licence key and IV onto the owning book or component
+- [x] `internal/db` — write the download file name, including the `_Mono`/`_Stereo` suffix
+- [x] `internal/db` — write the exported `.aax` path of a conversion, which the handoff to AAX Audio Converter reads
+- [x] `internal/db` — write the chapter tree
+- [x] `internal/db` — write the series ordering onto the book document
+- [x] `internal/db` — `ApplicableState` — resolve the transient `download` state to the persisted one
+- [x] `internal/db` — `ApplicableDownloadQuality` — minimum quality across components
+- [x] `internal/db` — multi-part book state = minimum of its components' states
+- [x] `internal/db` — soft delete and re-add semantics
+- [x] `internal/db` — pseudo-ASIN allocation for people without one
+- [x] `internal/db` — merge duplicate author entries, preferring the real long ASIN
+- [x] `internal/db` — copy the database file before a destructive change
+- [x] `internal/db` — tests: document round-trip, tenancy isolation, aggregation, chapter tree, state transitions
 ## M3 — Audible protocol
 
 - [ ] `internal/audible/model` — library response DTOs (product, relationship, series, author)
