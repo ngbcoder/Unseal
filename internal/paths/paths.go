@@ -2,16 +2,16 @@
 //
 // The application keeps its state under the local application data folder:
 //
-//	%LOCALAPPDATA%\unseal\data       the library database
-//	%LOCALAPPDATA%\unseal\img        cover images, named <ASIN>.<ext>
-//	%LOCALAPPDATA%\unseal\config     Configuration.json, the profile store
-//	%LOCALAPPDATA%\unseal\settings   usersettings.json
-//	%LOCALAPPDATA%\unseal\log        rolling log files
-//	%LOCALAPPDATA%\unseal\tmp        diagnostics dumps
+//	%LOCALAPPDATA%\audiamus\Unseal\data       the library database
+//	%LOCALAPPDATA%\audiamus\Unseal\img        cover images, named <ASIN>.<ext>
+//	%LOCALAPPDATA%\audiamus\Unseal\config     Configuration.json, the profile store
+//	%LOCALAPPDATA%\audiamus\Unseal\settings   usersettings.json
+//	%LOCALAPPDATA%\audiamus\Unseal\log        rolling log files
+//	%LOCALAPPDATA%\audiamus\Unseal\tmp        diagnostics dumps and handoff documents
 //
-// The original implementation nested the application under a company folder
-// and used the assembly name. Unseal has no company, so the application
-// folder sits directly under the local application data folder.
+// The layout follows the original implementation, which nested the
+// application under a company folder, and matches the handoff contract in
+// URIhandoff.md, which names the temp directory explicitly.
 //
 // Layer L0 (foundation).
 package paths
@@ -22,9 +22,14 @@ import (
 	"path/filepath"
 )
 
-// AppName is the folder name Unseal uses under the local application data
-// folder.
-const AppName = "unseal"
+// The application folders under the local application data folder.
+const (
+	// Company is the company folder. Unseal is developed alongside the
+	// original project, so it keeps the same folder.
+	Company = "audiamus"
+	// AppName is the application folder.
+	AppName = "Unseal"
+)
 
 // Subdirectory names.
 const (
@@ -81,7 +86,7 @@ func Resolve() (Layout, error) {
 	if err != nil {
 		return Layout{}, err
 	}
-	return New(filepath.Join(base, AppName)), nil
+	return New(filepath.Join(base, Company, AppName)), nil
 }
 
 // localAppData returns the local application data folder.

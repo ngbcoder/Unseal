@@ -92,7 +92,7 @@ revision, commit time and dirty-tree flag into the binary, and
 | Repository | `github.com/ngbcoder/Unseal` (public) |
 | License | GPL-3.0 — required, the upstream C# project is GPL-3.0 and this is a derivative |
 | Attribution | README credits `audiamus/BookLibConnect` and its author |
-| Config root | `%LOCALAPPDATA%\unseal\` · `~/.config/unseal/` · `~/Library/Application Support/unseal/` |
+| Config root | `%LOCALAPPDATA%\audiamus\Unseal\` |
 | Update manifest | `res/Setup.json` in this repository |
 
 ---
@@ -332,6 +332,51 @@ and the legal stance.
 
 ---
 
+## M9 — Handoff to AAX Audio Converter
+
+Build order: this milestone sits after M4, because it needs the export stage
+and the persisted exported path. It comes before M5, so the end-to-end path
+from download to conversion is available before the pipeline and the
+interface are finished.
+
+Implements the sender side of the contract in [`URIhandoff.md`](URIhandoff.md).
+The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`.
+
+- [ ] `internal/handoff` — the handoff document — protocol, source, created, files, options
+- [ ] `internal/handoff` — the file entry — path, asin, title, authors, narrators, series, seriesSequence, coverPath, durationMs
+- [ ] `internal/handoff` — build the document from a set of conversions
+- [ ] `internal/handoff` — write the document to the temp directory as `handoff-<token>.json`
+- [ ] `internal/handoff` — the token is 8 lowercase hex characters, unique per handoff
+- [ ] `internal/handoff` — write the document through a temporary sibling, then rename, so the receiver never sees a partial file
+- [ ] `internal/handoff` — the document protocol version is 1
+- [ ] `internal/handoff` — the options are omitted, so the receiver keeps its own settings
+- [ ] `internal/handoff` — build the URI `aaxconv://add?doc=<encoded>&activate=1&src=unseal`
+- [ ] `internal/handoff` — percent-encode with `url.Values`, never by string concatenation
+- [ ] `internal/handoff` — the URI stays well under the Windows command-line limit
+- [ ] `internal/handoff` — spawn the receiver executable with the URI as `argv[1]`
+- [ ] `internal/handoff` — hide the console window on Windows, no console flash
+- [ ] `internal/handoff` — detect an immediate spawn failure and report it
+- [ ] `internal/handoff` — do not wait for the receiver and do not start a conversion
+- [ ] `internal/handoff` — the sender's own state machine does not change, a book stays `exported`
+- [ ] `internal/handoff` — locate the receiver — the uninstall registry key first, then the user setting
+- [ ] `internal/handoff` — read `HKLM` and `HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{AAX Audio Converter}_is1\InstallLocation`
+- [ ] `internal/handoff` — the receiver executable is `AaxAudioConverter.exe` in that directory
+- [ ] `internal/handoff` — the user setting holds the path and the user can browse for it
+- [ ] `internal/handoff` — the button — "Convert with AAX Audio Converter", in the download-queue toolbar
+- [ ] `internal/handoff` — the button is enabled only when a row is selected
+- [ ] `internal/handoff` — the button is enabled only when every selected row is `exported` or `converted`
+- [ ] `internal/handoff` — the button is enabled only when the converter path is configured and the file exists
+- [ ] `internal/handoff` — the tooltip states which condition failed
+- [ ] `internal/handoff` — rows may belong to different books, all of them go in one request
+- [ ] `internal/handoff` — a multi-part book sends one file per part, the receiver groups them itself
+- [ ] `internal/handoff` — `testdata/handoff/minimal.json` — one file, no metadata, no options
+- [ ] `internal/handoff` — `testdata/handoff/rich.json` — two files of one multi-part book, full metadata, options
+- [ ] `internal/handoff` — `testdata/handoff/empty.json` — the degenerate case, `files: []`
+- [ ] `internal/handoff` — `testdata/handoff/uri_minimal.txt` and `uri_doc.txt`
+- [ ] `internal/handoff` — the test asserts the built document matches the golden fixture
+- [ ] `internal/handoff` — the test parses the golden URIs and asserts the verb and the parameters
+- [ ] `internal/handoff` — the golden fixtures are the same files the receiver repository uses
+
 ## M5 — Pipeline
 
 - [ ] `internal/pipeline` — job driver over a set of conversions
@@ -434,6 +479,7 @@ and the legal stance.
 - [ ] `internal/i18n` — resource strings for English and German
 - [ ] `internal/i18n` — region names, state descriptions and captions
 - [ ] `.github/workflows/ci.yml` — format check, vet, race tests
+- [ ] `.github/workflows/ci.yml` — the race detector needs cgo, so the runner needs a C compiler. GitHub's windows runners ship mingw
 - [ ] `.github/workflows/ci.yml` — build matrix: windows/amd64
 - [ ] `.github/workflows/release.yml` — build, checksum, publish a GitHub release
 - [ ] `.github/workflows/release.yml` — update `res/Setup.json` with the new version
@@ -441,45 +487,6 @@ and the legal stance.
 - [ ] `README.md` — screenshots, usage, legal notice, upstream attribution
 
 ---
-
-## M9 — Handoff to AAX Audio Converter
-
-Implements the sender side of the contract in [`URIhandoff.md`](URIhandoff.md).
-The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`.
-
-- [ ] `internal/handoff` — the handoff document — protocol, source, created, files, options
-- [ ] `internal/handoff` — the file entry — path, asin, title, authors, narrators, series, seriesSequence, coverPath, durationMs
-- [ ] `internal/handoff` — build the document from a set of conversions
-- [ ] `internal/handoff` — write the document to the temp directory as `handoff-<token>.json`
-- [ ] `internal/handoff` — the token is 8 lowercase hex characters, unique per handoff
-- [ ] `internal/handoff` — write the document through a temporary sibling, then rename, so the receiver never sees a partial file
-- [ ] `internal/handoff` — the document protocol version is 1
-- [ ] `internal/handoff` — the options are omitted, so the receiver keeps its own settings
-- [ ] `internal/handoff` — build the URI `aaxconv://add?doc=<encoded>&activate=1&src=unseal`
-- [ ] `internal/handoff` — percent-encode with `url.Values`, never by string concatenation
-- [ ] `internal/handoff` — the URI stays well under the Windows command-line limit
-- [ ] `internal/handoff` — spawn the receiver executable with the URI as `argv[1]`
-- [ ] `internal/handoff` — hide the console window on Windows, no console flash
-- [ ] `internal/handoff` — detect an immediate spawn failure and report it
-- [ ] `internal/handoff` — do not wait for the receiver and do not start a conversion
-- [ ] `internal/handoff` — the sender's own state machine does not change, a book stays `exported`
-- [ ] `internal/handoff` — locate the receiver — the uninstall registry key first, then the user setting
-- [ ] `internal/handoff` — read `HKLM` and `HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{AppName}_is1\InstallLocation`
-- [ ] `internal/handoff` — the user setting holds the path and the user can browse for it
-- [ ] `internal/handoff` — the button — "Convert with AAX Audio Converter", in the download-queue toolbar
-- [ ] `internal/handoff` — the button is enabled only when a row is selected
-- [ ] `internal/handoff` — the button is enabled only when every selected row is `exported` or `converted`
-- [ ] `internal/handoff` — the button is enabled only when the converter path is configured and the file exists
-- [ ] `internal/handoff` — the tooltip states which condition failed
-- [ ] `internal/handoff` — rows may belong to different books, all of them go in one request
-- [ ] `internal/handoff` — a multi-part book sends one file per part, the receiver groups them itself
-- [ ] `internal/handoff` — `testdata/handoff/minimal.json` — one file, no metadata, no options
-- [ ] `internal/handoff` — `testdata/handoff/rich.json` — two files of one multi-part book, full metadata, options
-- [ ] `internal/handoff` — `testdata/handoff/empty.json` — the degenerate case, `files: []`
-- [ ] `internal/handoff` — `testdata/handoff/uri_minimal.txt` and `uri_doc.txt`
-- [ ] `internal/handoff` — the test asserts the built document matches the golden fixture
-- [ ] `internal/handoff` — the test parses the golden URIs and asserts the verb and the parameters
-- [ ] `internal/handoff` — the golden fixtures are the same files the receiver repository uses
 
 ## Known gaps
 

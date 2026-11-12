@@ -1,7 +1,7 @@
-# URI Handoff — Unseal → AAX Audio Converter
+# URI Handoff — Unseal → Unbind
 
 > **Document type:** Interface specification
-> **Consumers:** `Unseal` (sender) · `AAX Audio Converter` (receiver)
+> **Consumers:** `Unseal` (sender) · `Unbind` (receiver)
 > **Status:** Draft — awaiting sign-off before either side implements
 > **Owner of this copy:** `BookLibConnect` (the sender), because the button lives here
 > **Intended location:** `P:\Nbprojects\Go\BookLibConnect\URIhandoff.md`
@@ -17,7 +17,7 @@
 4. [Wire format — the URI](#4-wire-format--the-uri)
 5. [Wire format — the handoff document](#5-wire-format--the-handoff-document)
 6. [Transport — the local endpoint](#6-transport--the-local-endpoint)
-7. [Receiver behaviour — AAX Audio Converter](#7-receiver-behaviour--aax-audio-converter)
+7. [Receiver behaviour — Unbind](#7-receiver-behaviour--aax-audio-converter)
 8. [Sender behaviour — Unseal](#8-sender-behaviour--unseal)
 9. [The button](#9-the-button)
 10. [Error handling](#10-error-handling)
@@ -34,20 +34,20 @@
 ## 1. Purpose
 
 Unseal downloads and de-DRM's audiobooks, then exports them as `.aax` files plus
-Audible-shaped sidecar JSON. AAX Audio Converter turns those `.aax` files into
+Audible-shaped sidecar JSON. Unbind turns those `.aax` files into
 `.mp3` / `.m4a` / `.m4b`.
 
-Today the user has to leave Unseal, open AAX Audio Converter, and drag the exported
+Today the user has to leave Unseal, open Unbind, and drag the exported
 files across. This document specifies a **one-click handoff**: a button in Unseal
 that loads the selected exported `.aax` files into a running (or not yet running)
-AAX Audio Converter.
+Unbind.
 
 ### 1.1 What this document is
 
 A **wire format** and a **behavioural contract** that both sides implement
 independently. Neither side imports the other's code. The contract is:
 
-- a **URI** (`aaxconv://…`) that names the operation,
+- a **URI** (`unbind://…`) that names the operation,
 - an optional **JSON document** that carries the payload,
 - a **local endpoint** that delivers the request to an already-running receiver.
 
@@ -55,9 +55,9 @@ independently. Neither side imports the other's code. The contract is:
 
 - It is not a plugin API. There is no shared library, no shared Go module, no
   in-process call.
-- It does not describe the conversion itself. AAX Audio Converter owns that
+- It does not describe the conversion itself. Unbind owns that
   entirely.
-- It does not describe the reverse direction. AAX Audio Converter does **not**
+- It does not describe the reverse direction. Unbind does **not**
   report completion back to Unseal in v1 (see [§15](#15-open-decisions)).
 
 ---
@@ -66,7 +66,7 @@ independently. Neither side imports the other's code. The contract is:
 
 ```
 ┌──────────────────────┐                          ┌───────────────────────────┐
-│  Unseal (sender)     │                          │  AAX Audio Converter      │
+│  Unseal (sender)     │                          │  Unbind      │
 │                      │                          │  (receiver)               │
 │  [Convert…] button   │                          │                           │
 │         │            │                          │                           │
@@ -75,7 +75,7 @@ independently. Neither side imports the other's code. The contract is:
 │         │            │    handoff-<token>.json  │                           │
 │         ▼            │                          │                           │
 │  spawn converter ────┼──► argv[1] =             │                           │
-│         with URI     │    "aaxconv://add?doc=…"  │                           │
+│         with URI     │    "unbind://add?doc=…"  │                           │
 │                      │                          │                           │
 └──────────────────────┘                          └───────────┬───────────────┘
                                                               │
@@ -98,7 +98,7 @@ receiver** — Unseal never speaks it. Unseal only ever spawns a process.
 
 ## 3. Roles and responsibilities
 
-| | Unseal (sender) | AAX Audio Converter (receiver) |
+| | Unseal (sender) | Unbind (receiver) |
 |---|---|---|
 | Owns the `.aax` files and sidecars | ✅ | consumes them |
 | Knows the ASIN, series, cover cache | ✅ | — |
@@ -119,10 +119,10 @@ receiver validates and drops what it cannot use.
 ### 4.1 Grammar
 
 ```
-aaxconv://<verb>[?<param>=<value>[&<param>=<value>]*]
+unbind://<verb>[?<param>=<value>[&<param>=<value>]*]
 ```
 
-The scheme is `aaxconv`, lowercase. Windows treats the scheme case-insensitively,
+The scheme is `unbind`, lowercase. Windows treats the scheme case-insensitively,
 so the receiver must compare case-insensitively.
 
 ### 4.2 Verbs
@@ -169,9 +169,9 @@ may not be combined with inline paths in v1.
 ### 4.6 Examples
 
 ```
-aaxconv://add?p=C%3A%5CBooks%5Cbook1.aax&activate=1&src=unseal
-aaxconv://add?doc=C%3A%5CUsers%5Cx%5CAppData%5CLocal%5Caudiamus%5CUnseal%5Ctmp%5Chandoff-8f3a1c.json
-aaxconv://show
+unbind://add?p=C%3A%5CBooks%5Cbook1.aax&activate=1&src=unseal
+unbind://add?doc=C%3A%5CUsers%5Cx%5CAppData%5CLocal%5Caudiamus%5CUnseal%5Ctmp%5Chandoff-8f3a1c.json
+unbind://show
 ```
 
 ---
@@ -190,7 +190,7 @@ room for metadata that will not fit in a query string.
 |---|---|
 | Written by | Unseal |
 | Path | `%LOCALAPPDATA%\audiamus\Unseal\tmp\handoff-<token>.json` |
-| Read by | AAX Audio Converter (read-only) |
+| Read by | Unbind (read-only) |
 | Deleted by | **Unseal**, via its temp-directory housekeeping (M8) |
 
 The receiver **must not** delete the document — the sender owns its temp
@@ -235,7 +235,7 @@ directory. The receiver must open it read-only.
 | Missing `files` | Treated as an empty array → the receiver logs "handoff contained no files". |
 | `path` | Must be absolute, must exist, must be a regular file. |
 | `coverPath` | Absolute path to an image file. Used **only** if the `.aax` has no embedded cover. |
-| `options.format` | Maps to AAX Audio Converter's `EConvFormat`: `mp3`, `mp4`. |
+| `options.format` | Maps to Unbind's `EConvFormat`: `mp3`, `mp4`. |
 | `options.mode` | Maps to `EConvMode`: `single`, `chapters`, `splitChapters`, `splitTime`. |
 | `options` absent | The receiver uses **its own current settings**; the handoff does not change them. |
 
@@ -279,9 +279,9 @@ LocalEndpoint
 
 | Platform | Name |
 |---|---|
-| Windows | `\\.\pipe\AAXAudioConverter.handoff` |
-| macOS | `$XDG_RUNTIME_DIR/aaxconv.sock` (fallback `os.UserCacheDir()/aaxconv.sock`) |
-| Linux | `$XDG_RUNTIME_DIR/aaxconv.sock` (fallback `os.UserCacheDir()/aaxconv.sock`) |
+| Windows | `\\.\pipe\Unbind.handoff` |
+| macOS | `$XDG_RUNTIME_DIR/unbind.sock` (fallback `os.UserCacheDir()/unbind.sock`) |
+| Linux | `$XDG_RUNTIME_DIR/unbind.sock` (fallback `os.UserCacheDir()/unbind.sock`) |
 
 The Windows named pipe is **session-local** by default (no `Global\` prefix), which
 matches the session-local semantics of the POSIX socket. Two users on the same
@@ -291,7 +291,7 @@ machine do not collide.
 
 | Direction | Message | Payload |
 |---|---|---|
-| client → server | `handoff` | `{"type":"handoff","uri":"aaxconv://add?…"}` |
+| client → server | `handoff` | `{"type":"handoff","uri":"unbind://add?…"}` |
 | client → server | `ping` | `{"type":"ping"}` |
 | server → client | `ack` | `{"type":"ack","ok":true,"added":3,"skipped":0,"error":""}` |
 | server → client | `pong` | `{"type":"pong"}` |
@@ -315,13 +315,13 @@ followed by that many bytes of UTF-8 JSON. Maximum message size 1 MiB.
 
 ---
 
-## 7. Receiver behaviour — AAX Audio Converter
+## 7. Receiver behaviour — Unbind
 
 ### 7.1 Startup sequence
 
 ```
 1. Parse argv.
-   - argv[1] == "aaxconv://…"  → URI request
+   - argv[1] == "unbind://…"  → URI request
    - any other argv element     → a file path (file-association behaviour)
    - both may be present.
 
@@ -422,7 +422,7 @@ positive.
      — write to a .tmp sibling first, then rename, so the receiver never sees a
        partially written document.
 4. Build the URI:
-     aaxconv://add?doc=<percent-encoded path>&activate=1&src=unseal
+     unbind://add?doc=<percent-encoded path>&activate=1&src=unseal
 5. Spawn the receiver:
      exec.Command(convExePath, uri)
      - HideWindow on Windows (no console flash)
@@ -448,7 +448,7 @@ convenience for humans and for the shell, not a requirement for the sender.
 | Windows | Auto-detect from `HKLM`/`HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{AppName}_is1\InstallLocation`; otherwise a user setting. |
 | macOS / Linux | A user setting pointing at the executable. |
 
-The sender stores the resolved path in its own settings (`AaxAudioConverterPath`)
+The sender stores the resolved path in its own settings (`UnbindPath`)
 and lets the user browse for it.
 
 ---
@@ -458,7 +458,7 @@ and lets the user browse for it.
 ### 9.1 Placement
 
 Main window, download-queue toolbar, next to the existing `[Download…]` and
-`[Remove]` buttons. Label: **"Convert with AAX Audio Converter"**.
+`[Remove]` buttons. Label: **"Convert with Unbind"**.
 
 ### 9.2 Enablement
 
@@ -542,7 +542,7 @@ defensive.
 | Path comparison | case-insensitive | case-sensitive | case-sensitive |
 | Long paths | `\\?\` prefix beyond 260 chars | n/a | n/a |
 | Spawn | `exec.Command`, `HideWindow` | `exec.Command` | `exec.Command` |
-| Shell integration | `.aax`/`.aa` file association + optional `aaxconv://` handler | `.app` bundle `CFBundleURLTypes` (optional) | `.desktop` + XDG MIME (optional) |
+| Shell integration | `.aax`/`.aa` file association + optional `unbind://` handler | `.app` bundle `CFBundleURLTypes` (optional) | `.desktop` + XDG MIME (optional) |
 | Receiver path discovery | uninstall registry key | user setting | user setting |
 | Runtime prerequisites | — | `.app` bundle, signing for distribution | X11, Pango/Cairo, GTK |
 
@@ -562,8 +562,8 @@ Golden fixtures, committed to **both** repositories:
 | `testdata/handoff/minimal.json` | One file, no metadata, no options. |
 | `testdata/handoff/rich.json` | Two files of one multi-part book, full metadata, options. |
 | `testdata/handoff/empty.json` | `files: []` — the degenerate case. |
-| `testdata/handoff/uri_minimal.txt` | `aaxconv://add?p=C%3A%5CBooks%5Ca.aax&activate=1&src=unseal` |
-| `testdata/handoff/uri_doc.txt` | `aaxconv://add?doc=…&activate=1&src=unseal` |
+| `testdata/handoff/uri_minimal.txt` | `unbind://add?p=C%3A%5CBooks%5Ca.aax&activate=1&src=unseal` |
+| `testdata/handoff/uri_doc.txt` | `unbind://add?doc=…&activate=1&src=unseal` |
 
 Each side must have a test that:
 
@@ -584,7 +584,7 @@ Each side must have a test that:
 | 3 | One shared Go module for the schema, or duplicated structs? | **Duplicated structs plus a shared golden fixture.** No cross-repository dependency, no version skew; the `protocol` field plus ignored-unknown-fields makes divergence safe. |
 | 4 | Where does this document live? | This copy is in the BookLibConnect repository. The converter repository should hold a pointer to it, or an identical copy under the same name. |
 | 5 | Should `doc` be replaced by inline `p` parameters entirely? | No — the document exists to carry metadata, and to keep the URI short. |
-| 6 | Should the URI scheme be `aaxconv` or something namespaced further? | `aaxconv` is short and matches the product. Risk of collision on a shared machine is negligible for a desktop utility. |
+| 6 | Should the URI scheme be `unbind` or something namespaced further? | `unbind` is short and matches the product. Risk of collision on a shared machine is negligible for a desktop utility. |
 
 ---
 
@@ -593,16 +593,16 @@ Each side must have a test that:
 The protocol handler is a **convenience**, not a requirement. Without it the
 sender still works, because it spawns the executable directly.
 
-Registered by the AAX Audio Converter installer (Inno Setup) into the **per-user**
+Registered by the Unbind installer (Inno Setup) into the **per-user**
 registry, so no elevation is needed:
 
 ```
-HKEY_CURRENT_USER\Software\Classes\aaxconv
-    (Default)      = "URL:AAX Audio Converter Protocol"
+HKEY_CURRENT_USER\Software\Classes\unbind
+    (Default)      = "URL:Unbind Protocol"
     "URL Protocol" = ""
 
-HKEY_CURRENT_USER\Software\Classes\aaxconv\shell\open\command
-    (Default)      = "\"C:\Program Files\audiamus\AAX Audio Converter\AAXAudioConverter.exe\" \"%1\""
+HKEY_CURRENT_USER\Software\Classes\unbind\shell\open\command
+    (Default)      = "\"C:\Program Files\audiamus\Unbind\Unbind.exe\" \"%1\""
 ```
 
 The same installer removes the key on uninstall.

@@ -71,18 +71,37 @@ func TestEnsureIsIdempotent(t *testing.T) {
 }
 
 func TestResolveUsesTheLocalAppDataFolder(t *testing.T) {
-	t.Setenv("LOCALAPPDATA", filepath.Join(t.TempDir(), "Local"))
+	local := filepath.Join(t.TempDir(), "Local")
+	t.Setenv("LOCALAPPDATA", local)
 
 	l, err := paths.Resolve()
 	if err != nil {
 		t.Fatalf("Resolve failed: %v", err)
 	}
 
-	if filepath.Base(l.Root) != paths.AppName {
-		t.Errorf("the root must end in %q, got %q", paths.AppName, l.Root)
+	want := filepath.Join(local, paths.Company, paths.AppName)
+	if l.Root != want {
+		t.Errorf("the root is %q, want %q", l.Root, want)
 	}
-	if l.Root == "" || l.Data == "" {
+	if l.Temp == "" || l.Data == "" {
 		t.Error("Resolve must fill in every directory")
+	}
+}
+
+func TestTheLayoutMatchesTheHandoffContract(t *testing.T) {
+	// URIhandoff.md names the handoff document's location explicitly, so the
+	// temp directory has to be where the contract says it is.
+	local := filepath.Join(t.TempDir(), "Local")
+	t.Setenv("LOCALAPPDATA", local)
+
+	l, err := paths.Resolve()
+	if err != nil {
+		t.Fatalf("Resolve failed: %v", err)
+	}
+
+	want := filepath.Join(local, "audiamus", "Unseal", "tmp")
+	if l.Temp != want {
+		t.Errorf("the temp directory is %q, want %q", l.Temp, want)
 	}
 }
 

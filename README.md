@@ -125,6 +125,31 @@ scripting and for diagnostics.
 
 ---
 
+## Testing
+
+```sh
+go test ./...                   # the whole suite
+go test -coverprofile=coverage.out ./...
+```
+
+The race detector needs cgo, so it needs a C compiler. This machine has two:
+
+```sh
+# MSYS2, already present
+export PATH="/c/msys64/mingw64/bin:$PATH"
+
+# or WinLibs, installed through winget
+export PATH="$LOCALAPPDATA/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/bin:$PATH"
+
+export CGO_ENABLED=1
+export CC=gcc
+go test -race ./...
+```
+
+The release build stays `CGO_ENABLED=0`; only the tests need a compiler.
+
+---
+
 ## Architecture
 
 The application is layered so that the protocol and orchestration code never
