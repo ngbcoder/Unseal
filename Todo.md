@@ -403,12 +403,12 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 - [ ] `internal/ui` — download staging — one row per component for multi-part books
 - [ ] `internal/ui` — stable row identifiers so sorting never loses the selection
 - [ ] `internal/ui` — profile dialogs — manage, rename, remove
-- [ ] `internal/ui` — profile dialogs — new registration: create URL, open browser, paste redirect
+- [x] `internal/ui` — profile dialogs — new registration: create URL, open browser, paste redirect
 - [ ] `internal/ui` — profile dialogs — account alias, minimum 3 characters, unique by CRC32
 - [x] `internal/ui` — first-run wizard — profile, download directory, export decision, help
-- [ ] `internal/ui` — file dialogs for the download and export directories
-- [ ] `internal/ui` — background work results marshalled back with `app.Post`
-- [ ] `internal/ui` — plain field changes trigger `app.RequestUpdate`
+- [x] `internal/ui` — file dialogs for the download and export directories
+- [x] `internal/ui` — background work results marshalled back with `app.Post`
+- [x] `internal/ui` — plain field changes trigger `app.RequestUpdate`
 - [ ] `internal/ui` — progress rendering from the progress stream
 - [x] `internal/ui` — tests: HTML to text golden cases, state icon mapping, alias uniqueness
 ## M6 — Security
