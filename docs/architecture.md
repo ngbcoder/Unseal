@@ -125,18 +125,21 @@ Because the key is machine-bound, a profile encrypted on one machine cannot be
 decrypted on another. The passphrase-based export and import command in
 milestone M6 is the answer to that.
 
-### 3.5 Hardware identity is per platform
+### 3.5 Hardware identity is Windows-only for now
 
-`hw` isolates the platform differences behind one interface:
+`hw` isolates the platform differences behind one interface. Only Windows is
+implemented for now, matching the original's scope:
 
-| Platform | CPU identifier | Board identifier |
-|----------|----------------|------------------|
+| Source | CPU identifier | Board identifier |
+|--------|----------------|------------------|
 | Windows | WMI `Win32_Processor.ProcessorID` | WMI SMBIOS serial, PNP device id as fallback |
-| Linux | `/proc/cpuinfo` | `/sys/class/dmi/id`, `/etc/machine-id` |
-| macOS | `sysctl` CPU brand | `IOPlatformUUID` via `ioreg` |
 
-The platform-specific code lives in build-tagged files so the package keeps
-building everywhere.
+When identifiers cannot be read the package reports a weak result so the
+user interface can warn that the configuration is only weakly protected.
+
+The lookup sits behind an interface, so adding Linux or macOS later means
+adding a platform file and nothing else. The domain code never asks which
+platform it is running on.
 
 ### 3.6 The database is an embedded document store
 
@@ -172,9 +175,11 @@ and ships as a single static binary with no C toolchain anywhere.
 ### 3.7 The user interface never blocks and never races
 
 The interface is built with [GOUI](https://github.com/golang-gui/goui), a native
-desktop GUI toolkit for Go. Unlike Gio and Fyne, GOUI loads the platform's
-native APIs at runtime through purego, so the application builds with
-`CGO_ENABLED=0` on Windows, Linux and macOS alike.
+desktop GUI toolkit for Go. GOUI loads the platform's native APIs at runtime
+through purego, so the application builds with `CGO_ENABLED=0` and needs no C
+toolchain on the build machine.
+
+Windows is the only supported platform for now, matching the original.
 
 The interface is declarative. Views are ordinary Go values that may be rebuilt
 on every frame, while the framework retains the underlying widgets. Durable

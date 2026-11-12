@@ -2,7 +2,7 @@
 //
 // The interface is built with GOUI, a native desktop GUI toolkit for Go that
 // loads the platform's native APIs at runtime, so the whole application
-// builds with CGO_ENABLED=0 on Windows, Linux and macOS.
+// builds with CGO_ENABLED=0.
 //
 // The layer is split into:
 //

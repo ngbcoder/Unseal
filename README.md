@@ -59,6 +59,7 @@ in [`Todo.md`](Todo.md).
 
 ## Requirements
 
+- **Windows x64** — the only supported platform for now
 - Go 1.26.4 or newer (to build)
 - [ffmpeg](https://ffmpeg.org/) with the `aax` demuxer (to decrypt)
 
@@ -99,11 +100,10 @@ A plain `go build` needs no ceremony: since Go 1.24 the toolchain embeds the VCS
 revision, commit time and dirty-tree flag into the binary, and
 `internal/version` recovers them.
 
-The whole tree builds with `CGO_ENABLED=0`, so no C toolchain is needed and
-cross-compilation is a one-liner:
+The whole tree builds with `CGO_ENABLED=0`, so no C toolchain is needed:
 
 ```sh
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ./...
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build ./...
 ```
 
 ---

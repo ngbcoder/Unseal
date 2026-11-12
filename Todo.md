@@ -33,12 +33,13 @@ uploaded to open servers, torrents or any mass-distribution channel.
 |-------|-----------|-----|
 | Language | Go 1.26.4 | Matches the rest of the workspace; single static binary |
 | **Constraint** | **`CGO_ENABLED=0` everywhere** | No cgo toolchain needed to build, cross-compilation is trivial, no gcc on the build machine |
-| UI | `github.com/golang-gui/goui` v0.4.0 | Native desktop GUI for Windows, macOS and Linux. No cgo — native APIs are loaded at runtime through purego. MIT licensed. |
+| **Target** | **Windows x64** | The only supported platform for now, matching the original. Other platforms are not built, tested or shipped. |
+| UI | `github.com/golang-gui/goui` v0.4.0 | Native desktop GUI toolkit. No cgo — the native APIs are loaded at runtime through purego. MIT licensed. |
 | Storage | `go.etcd.io/bbolt` v1.5.0 | Pure Go embedded KV store; document-per-book; no ORM, no SQL, no migrations |
 | HTTP | stdlib `net/http` | Explicit cookie jar, auto-redirect disabled |
 | Crypto | stdlib `crypto/*`, `golang.org/x/crypto` | `crypto/pbkdf2` is stdlib since Go 1.24 |
 | HTML→text | `golang.org/x/net/html` | Replaces HtmlAgilityPack |
-| Hardware ID | `github.com/stackexchange/wmi` + `/sys` + `ioreg` | Cross-platform key derivation |
+| Hardware ID | `github.com/stackexchange/wmi` | Windows machine identity for the credential-store key derivation |
 | Decryption | ffmpeg `aax` demuxer (`-audible_key`/`-audible_iv`) | Replaces the C# AAXClean package |
 | CLI | stdlib `flag` | No dependency until a real need appears |
 
@@ -51,7 +52,7 @@ go test ./...                                    # run the tests
 go test -race ./...                              # run the tests with the race detector
 go vet ./...                                     # vet
 gofmt -l .                                       # formatting check
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ./...   # cross-compile
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build ./...   # release build
 ```
 
 A release build stamps the version, commit and build date:
@@ -86,7 +87,7 @@ revision, commit time and dirty-tree flag into the binary, and
 | Item | Value |
 |------|-------|
 | Program | Unseal |
-| Binary | `unseal.exe` (Windows) / `unseal` (Linux, macOS) |
+| Binary | `unseal.exe` |
 | Module | `github.com/ngbcoder/Unseal` |
 | Repository | `github.com/ngbcoder/Unseal` (public) |
 | License | GPL-3.0 — required, the upstream C# project is GPL-3.0 and this is a derivative |
@@ -135,10 +136,10 @@ departure is recorded here so it is a decision rather than an accident.
 |---|---|---|---|
 | 1 | EF Core entities over 15 SQL tables, with migrations | One nested document per book in a bbolt bucket | A fresh Go app has no legacy database to migrate, and the access patterns are document reads and writes, not joins. Removes the ORM, the migration machinery and the composite tenancy key. |
 | 2 | `Conversion.AccountId + Region` is the tenancy key | A separate bucket per account and region | Makes the tenancy implicit in the bucket instead of a column pair repeated in every query. The same title may exist independently per account, which is simpler than sharing a `Book` row across accounts. |
-| 3 | WinForms user interface | GOUI — native desktop GUI, no cgo on any of the three platforms | Gio and Fyne both need cgo for their windowing and GL backends on Linux and macOS. GOUI loads the native APIs at runtime through purego, so the whole application builds with `CGO_ENABLED=0` everywhere. |
+| 3 | WinForms user interface | GOUI — native desktop widgets | Gio and Fyne both need cgo for their windowing and GL backends. GOUI loads the native APIs at runtime through purego, so it stays cgo-free. GOUI also ships the widget set this app actually needs — a data table with custom cells, a split view, tabs and tree views — where Gio is immediate-mode and has no data grid, so the library grid would have to be hand-rolled. |
 | 4 | `AAXClean` NuGet package decrypts in-process | ffmpeg `aax` demuxer behind a `Decryptor` interface | Go has no AAXClean equivalent. The interface keeps a pure-Go backend possible later. |
 | 5 | Configuration encrypted with a hardware-derived key | Same scheme, plus passphrase-based export and import | The original's key is machine-bound, so a profile cannot move between machines. |
-| 6 | Windows only | Windows, Linux and macOS | Go makes it cheap. The hardware identity layer is isolated per platform. |
+| 6 | Windows only | Windows only for now | Same scope as the original. The hardware identity layer sits behind an interface so other platforms can be added later without touching the domain code, but they are not built, tested or shipped yet. |
 | 7 | Inno Setup installer and a `Setup.json` updater manifest | GoReleaser-style release workflow and the same manifest | Keeps the update channel identical to the original's. |
 | 8 | `EConversionState` ordinal order is semantically meaningful | Preserved exactly | The state machine depends on it. This is behaviour, not structure. |
 
@@ -168,7 +169,7 @@ and the legal stance.
 - [x] `internal/version/version_test.go`
 - [x] `cmd/unseal/main.go` — entry point, usage banner, `version`/`help`
 - [x] `go build ./...`, `go vet ./...`, `go test ./...` all clean
-- [x] Verified GOUI v0.4.0, bbolt and `golang.org/x/net/html` compile with `CGO_ENABLED=0` for windows/amd64, linux/amd64 and darwin/arm64
+- [x] Verified GOUI v0.4.0, bbolt and `golang.org/x/net/html` compile with `CGO_ENABLED=0` for windows/amd64
 - [x] GitHub repository `ngbcoder/Unseal` created (public), `origin` configured
 - [x] First push to `origin/main`
 
@@ -364,9 +365,7 @@ and the legal stance.
 - [ ] `internal/secure` — tests: round-trip, tamper detection, wrong key, malformed input
 - [ ] `internal/hw` — Windows CPU id via WMI `Win32_Processor.ProcessorID`
 - [ ] `internal/hw` — Windows motherboard serial via WMI SMBIOS, PNP device id as fallback
-- [ ] `internal/hw` — Linux CPU id from `/proc/cpuinfo`
-- [ ] `internal/hw` — Linux machine id from `/sys/class/dmi/id` and `/etc/machine-id`
-- [ ] `internal/hw` — macOS platform UUID via `ioreg`, CPU brand via `sysctl`
+- [ ] `internal/hw` — the identifier lookup sits behind an interface so other platforms can be added later
 - [ ] `internal/hw` — report a weak result when identifiers are unavailable
 - [ ] `internal/secure` — key derivation: `ROT13(userName) + cpuId + motherboardSerial`
 - [ ] `internal/secure` — configuration store — `Configuration.json` with a plaintext `Profiles` field
@@ -431,7 +430,7 @@ and the legal stance.
 - [ ] `internal/i18n` — resource strings for English and German
 - [ ] `internal/i18n` — region names, state descriptions and captions
 - [ ] `.github/workflows/ci.yml` — format check, vet, race tests
-- [ ] `.github/workflows/ci.yml` — build matrix: windows, linux, darwin
+- [ ] `.github/workflows/ci.yml` — build matrix: windows/amd64
 - [ ] `.github/workflows/release.yml` — build, checksum, publish a GitHub release
 - [ ] `.github/workflows/release.yml` — update `res/Setup.json` with the new version
 - [ ] `docs/` — user manual, architecture document, ADRs
@@ -441,23 +440,15 @@ and the legal stance.
 
 ## Known gaps
 
-- [ ] **linux/arm64 does not build with GOUI v0.4.0.** The `platform/linux/libs/libc`
-      bindings reference `syscall.SYS_PIPE` and `syscall.SYS_POLL`, which the Go
-      standard library only defines on linux/amd64. Compiling for linux/arm64
-      fails with `undefined: syscall.SYS_PIPE`. windows/amd64, linux/amd64 and
-      darwin/arm64 all build with `CGO_ENABLED=0`. This looks like an upstream
-      bug worth reporting to golang-gui/goui; until it is fixed, linux/arm64 is
-      not a supported target.
 - [ ] **ffmpeg is an external runtime dependency.** The C# original had none
       (AAXClean was in-process). Unseal needs a bootstrap downloader so that
       ffmpeg is never a manual prerequisite.
-- [ ] **Cross-platform means portable code, not portable credentials.** The
-      configuration key derives from machine identifiers, so a profile encrypted
-      on one machine cannot be decrypted on another. The export/import command
-      in M6 addresses this.
-- [ ] **Linux needs native libraries at runtime.** The build stays cgo-free, but
-      a Linux binary requires X11, GL, GLib, Fontconfig and Pango/Cairo present
-      on the machine. Wayland sessions need XWayland.
+- [ ] **Credentials are bound to the machine.** The configuration key derives
+      from machine identifiers, so a profile encrypted on one machine cannot
+      be decrypted on another. The export/import command in M6 addresses this.
+- [ ] **Only Windows is supported.** The code avoids OS-specific calls outside
+      `internal/hw` and `internal/ui`, so other platforms can be added later,
+      but they are not built, tested or shipped yet.
 - [ ] **GOUI v0.4.0 is young.** It was published on 2026-10-26 and its API is
       still moving, so the interface layer will need occasional adjustment.
 - [ ] **Audible's protocol can change server-side without notice.** The Go
