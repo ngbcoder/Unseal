@@ -122,12 +122,68 @@ func TestBuildAuthURIContainsTheOpenIDParameters(t *testing.T) {
 	}
 }
 
+func TestBuildAuthURIHasTheSigninPath(t *testing.T) {
+	login := audible.NewLogin("us", false)
+	uri := audible.BuildAuthURI(login, "")
+
+	// The original relies on the /ap/signin path and the /ap/maplanding
+	// return target. Getting either wrong breaks the sign-in.
+	if !strings.HasPrefix(uri, "https://www.amazon.com/ap/signin?") {
+		t.Errorf("the URI does not start with the sign-in path: %s", uri)
+	}
+	if !strings.Contains(uri, "openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fap%2Fmaplanding") {
+		t.Errorf("the return target is missing: %s", uri)
+	}
+}
+
+func TestBuildAuthURIHasEveryParameter(t *testing.T) {
+	login := audible.NewLogin("us", false)
+	uri := audible.BuildAuthURI(login, "")
+
+	// The full parameter set, in the order the original sends it.
+	params := []string{
+		"openid.oa2.response_type",
+		"openid.oa2.code_challenge_method",
+		"openid.oa2.code_challenge",
+		"openid.return_to",
+		"openid.assoc_handle",
+		"openid.identity",
+		"pageId",
+		"accountStatusPolicy",
+		"openid.claimed_id",
+		"openid.mode",
+		"openid.ns.oa2",
+		"openid.oa2.client_id",
+		"openid.ns.pape",
+		"marketPlaceId",
+		"openid.oa2.scope",
+		"forceMobileLayout",
+		"openid.ns",
+		"openid.pape.max_auth_age",
+	}
+
+	pos := 0
+	for _, p := range params {
+		idx := strings.Index(uri[pos:], p+"=")
+		if idx < 0 {
+			t.Fatalf("the URI is missing %q: %s", p, uri)
+		}
+		pos += idx
+	}
+}
+
 func TestBuildAuthURIUsesTheAudibleHostForPreAmazonLogin(t *testing.T) {
 	login := audible.NewLogin("de", true)
 	uri := audible.BuildAuthURI(login, "")
 
-	if !strings.HasPrefix(uri, "https://www.audible.de") {
+	if !strings.HasPrefix(uri, "https://www.audible.de/ap/signin") {
 		t.Errorf("pre-Amazon login must use the Audible host, got %s", uri)
+	}
+	if !strings.Contains(uri, "openid.assoc_handle=amzn_audible_ios_lap_de") {
+		t.Errorf("the assoc handle is wrong: %s", uri)
+	}
+	if !strings.Contains(uri, "pageId=amzn_audible_ios_privatepool") {
+		t.Errorf("the page id is wrong: %s", uri)
 	}
 }
 

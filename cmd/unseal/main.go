@@ -92,5 +92,3 @@ func printUsage() {
 	fmt.Println("  --config <p>  Use an alternate configuration directory")
 	fmt.Println("  --profile <a> Select an account profile by alias")
 }
-
-

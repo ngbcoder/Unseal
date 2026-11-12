@@ -93,5 +93,3 @@ func TestDecryptMissingFileReturnsAnError(t *testing.T) {
 		t.Error("Decrypt must fail when the input does not exist")
 	}
 }
-
-
