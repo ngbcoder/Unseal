@@ -54,6 +54,7 @@ in [`Todo.md`](Todo.md).
 | M6 | Credential store encryption, hardware identity | planned |
 | M7 | Command line and GOUI desktop interface | planned |
 | M8 | Self-update, diagnostics, CI and release | planned |
+| M9 | Handoff to AAX Audio Converter, per [`URIhandoff.md`](URIhandoff.md) | planned |
 
 ---
 

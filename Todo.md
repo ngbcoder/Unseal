@@ -120,6 +120,7 @@ unseal/
 ├── docs/                  architecture, ADRs, user manual
 ├── res/                   update manifest, images
 ├── Todo.md
+├── URIhandoff.md          the handoff contract with AAX Audio Converter
 ├── design.md              the original C# design document (reference spec)
 └── README.md
 ```
@@ -192,7 +193,8 @@ and the legal stance.
 - [ ] `internal/paths` — create directories on demand, idempotently
 - [ ] `internal/paths` — tests: directory layout is created and reused
 - [ ] `internal/config` — `AppSettings` (`LogLevel`, `DbgOnlineUpdate`) read-only tier
-- [ ] `internal/config` — `UserSettings` (`Download`, `Export`, `Config`, `Update`) read/write tier
+- [ ] `internal/config` — `UserSettings` (`Update`, `Download`, `Config`, `Export`) read/write tier
+- [ ] `internal/config` — the path of the AAX Audio Converter executable, used by the handoff
 - [ ] `internal/config` — JSON marshalling with stable field order and omitempty
 - [ ] `internal/config` — atomic write (temp file + rename)
 - [ ] `internal/config` — resolution order: user dir → app dir → defaults
@@ -238,6 +240,7 @@ and the legal stance.
 - [ ] `internal/db` — write the conversion state
 - [ ] `internal/db` — write the licence key and IV onto the owning book or component
 - [ ] `internal/db` — write the download file name, including the `_Mono`/`_Stereo` suffix
+- [ ] `internal/db` — write the exported `.aax` path of a conversion, which the handoff to AAX Audio Converter reads
 - [ ] `internal/db` — write the chapter tree
 - [ ] `internal/db` — write the series ordering onto the book document
 - [ ] `internal/db` — `ApplicableState` — resolve the transient `download` state to the persisted one
@@ -313,6 +316,7 @@ and the legal stance.
 - [ ] `internal/decrypt` — report the audio channel count after conversion
 - [ ] `internal/decrypt` — append the `_Mono` / `_Stereo` suffix and persist it
 - [ ] `internal/export` — copy `.m4b` to `<exportDir>\<name>.aax`
+- [ ] `internal/export` — record the exported `.aax` path on the conversion, so the handoff can find it
 - [ ] `internal/export` — cancellable copy with per-mille progress
 - [ ] `internal/export` — serialise the copy so concurrent parts cannot collide
 - [ ] `internal/export` — write `content_metadata_<ASIN>.json` — chapter tree, runtimes, brand intro/outro
@@ -437,6 +441,45 @@ and the legal stance.
 - [ ] `README.md` — screenshots, usage, legal notice, upstream attribution
 
 ---
+
+## M9 — Handoff to AAX Audio Converter
+
+Implements the sender side of the contract in [`URIhandoff.md`](URIhandoff.md).
+The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`.
+
+- [ ] `internal/handoff` — the handoff document — protocol, source, created, files, options
+- [ ] `internal/handoff` — the file entry — path, asin, title, authors, narrators, series, seriesSequence, coverPath, durationMs
+- [ ] `internal/handoff` — build the document from a set of conversions
+- [ ] `internal/handoff` — write the document to the temp directory as `handoff-<token>.json`
+- [ ] `internal/handoff` — the token is 8 lowercase hex characters, unique per handoff
+- [ ] `internal/handoff` — write the document through a temporary sibling, then rename, so the receiver never sees a partial file
+- [ ] `internal/handoff` — the document protocol version is 1
+- [ ] `internal/handoff` — the options are omitted, so the receiver keeps its own settings
+- [ ] `internal/handoff` — build the URI `aaxconv://add?doc=<encoded>&activate=1&src=unseal`
+- [ ] `internal/handoff` — percent-encode with `url.Values`, never by string concatenation
+- [ ] `internal/handoff` — the URI stays well under the Windows command-line limit
+- [ ] `internal/handoff` — spawn the receiver executable with the URI as `argv[1]`
+- [ ] `internal/handoff` — hide the console window on Windows, no console flash
+- [ ] `internal/handoff` — detect an immediate spawn failure and report it
+- [ ] `internal/handoff` — do not wait for the receiver and do not start a conversion
+- [ ] `internal/handoff` — the sender's own state machine does not change, a book stays `exported`
+- [ ] `internal/handoff` — locate the receiver — the uninstall registry key first, then the user setting
+- [ ] `internal/handoff` — read `HKLM` and `HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{AppName}_is1\InstallLocation`
+- [ ] `internal/handoff` — the user setting holds the path and the user can browse for it
+- [ ] `internal/handoff` — the button — "Convert with AAX Audio Converter", in the download-queue toolbar
+- [ ] `internal/handoff` — the button is enabled only when a row is selected
+- [ ] `internal/handoff` — the button is enabled only when every selected row is `exported` or `converted`
+- [ ] `internal/handoff` — the button is enabled only when the converter path is configured and the file exists
+- [ ] `internal/handoff` — the tooltip states which condition failed
+- [ ] `internal/handoff` — rows may belong to different books, all of them go in one request
+- [ ] `internal/handoff` — a multi-part book sends one file per part, the receiver groups them itself
+- [ ] `internal/handoff` — `testdata/handoff/minimal.json` — one file, no metadata, no options
+- [ ] `internal/handoff` — `testdata/handoff/rich.json` — two files of one multi-part book, full metadata, options
+- [ ] `internal/handoff` — `testdata/handoff/empty.json` — the degenerate case, `files: []`
+- [ ] `internal/handoff` — `testdata/handoff/uri_minimal.txt` and `uri_doc.txt`
+- [ ] `internal/handoff` — the test asserts the built document matches the golden fixture
+- [ ] `internal/handoff` — the test parses the golden URIs and asserts the verb and the parameters
+- [ ] `internal/handoff` — the golden fixtures are the same files the receiver repository uses
 
 ## Known gaps
 
