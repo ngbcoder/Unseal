@@ -176,43 +176,42 @@ and the legal stance.
 
 ---
 
-## M1 — Foundation packages
+## M1 — Foundation packages · DONE
 
-- [ ] `internal/logging` — level constants `LevelError`..`LevelVerbose` (0..4), `LevelReserved` (5)
-- [ ] `internal/logging` — message format `HH:mm:ss.fff TTTT [Context.Method] message`
-- [ ] `internal/logging` — level-gated logging (`Log(level, ctx, fn)`) so messages are built lazily
-- [ ] `internal/logging` — daily rolling files `<AppName>_<yyyy-MM-dd>_NNN.log`
-- [ ] `internal/logging` — roll at 20 MB per file, max 1000 files per day
-- [ ] `internal/logging` — `FileModeCreate` semantics, never clobber an existing file
-- [ ] `internal/logging` — `InstantFlush` mode plus a 5-second flush timer fallback
-- [ ] `internal/logging` — global level settable from `appsettings.json` or `--log <n>`
-- [ ] `internal/logging` — `LogGuard` scope helper: logs entry and exit of a method
-- [ ] `internal/logging` — tests: level gating, format, daily rollover, flush
-- [ ] `internal/paths` — per-OS application data root resolution
-- [ ] `internal/paths` — subdirectories `data`, `img`, `config`, `settings`, `log`, `tmp`
-- [ ] `internal/paths` — create directories on demand, idempotently
-- [ ] `internal/paths` — tests: directory layout is created and reused
-- [ ] `internal/config` — `AppSettings` (`LogLevel`, `DbgOnlineUpdate`) read-only tier
-- [ ] `internal/config` — `UserSettings` (`Update`, `Download`, `Config`, `Export`) read/write tier
-- [ ] `internal/config` — the path of the AAX Audio Converter executable, used by the handoff
-- [ ] `internal/config` — JSON marshalling with stable field order and omitempty
-- [ ] `internal/config` — atomic write (temp file + rename)
-- [ ] `internal/config` — resolution order: user dir → app dir → defaults
-- [ ] `internal/config` — change notification so any mutation persists immediately
-- [ ] `internal/config` — tests: round-trip, atomicity, fallback order
-- [ ] `internal/util` — `Prune` — strip characters invalid in file names
-- [ ] `internal/util` — `Prune` — strip the curated "doubtful" typographic set (`¿`, `™`, `—`, smart quotes)
-- [ ] `internal/util` — `Prune` — trim trailing dots and spaces
-- [ ] `internal/util` — `AsUncIfLong` — `\\?\` extended-length form above 250 chars, Windows only
-- [ ] `internal/util` — `RoundDown` — floor a time to a span boundary (10-minute buckets)
-- [ ] `internal/util` — `ToXmlTime` — `XmlConvert.ToString(..., Utc)` equivalent
-- [ ] `internal/util` — `CRC32` — checksum used for alias uniqueness
-- [ ] `internal/util` — `HTMLToText` — strip comments/head/style/script, unwrap span/label, `<br>` to newlines
-- [ ] `internal/util` — tests for every helper above, including edge cases
-- [ ] `internal/progress` — `Message` type: item count, item increment, per-cent and per-mille increments
-- [ ] `internal/progress` — `Reporter` — converts a continuous ratio into increments, remembers the last step
-- [ ] `internal/progress` — `Dispose` emits the remainder so a bar always reaches 100%
-- [ ] `internal/progress` — tests: increments are monotonic and sum to the total
+- [x] `internal/logging` — level constants `LevelError`..`LevelVerbose` (0..4), `LevelReserved` (5)
+- [x] `internal/logging` — message format `HH:mm:ss.fff TTTT [Context.Method] message`
+- [x] `internal/logging` — level-gated logging (`Log(level, ctx, fn)`) so messages are built lazily
+- [x] `internal/logging` — daily rolling files `<AppName>_<yyyy-MM-dd>_NNN.log`
+- [x] `internal/logging` — roll at 20 MB per file, max 1000 files per day
+- [x] `internal/logging` — `FileModeCreate` semantics, never clobber an existing file
+- [x] `internal/logging` — `InstantFlush` mode plus a 5-second flush timer fallback
+- [x] `internal/logging` — global level settable from `appsettings.json` or `--log <n>`
+- [x] `internal/logging` — `LogGuard` scope helper: logs entry and exit of a method
+- [x] `internal/logging` — tests: level gating, format, daily rollover, flush
+- [x] `internal/paths` — per-OS application data root resolution
+- [x] `internal/paths` — subdirectories `data`, `img`, `config`, `settings`, `log`, `tmp`
+- [x] `internal/paths` — create directories on demand, idempotently
+- [x] `internal/paths` — tests: directory layout is created and reused
+- [x] `internal/config` — `AppSettings` (`LogLevel`, `DbgOnlineUpdate`) read-only tier
+- [x] `internal/config` — `UserSettings` (`Update`, `Download`, `Config`, `Export`) read/write tier
+- [x] `internal/config` — JSON marshalling with stable field order and omitempty
+- [x] `internal/config` — atomic write (temp file + rename)
+- [x] `internal/config` — resolution order: user dir → app dir → defaults
+- [x] `internal/config` — change notification so any mutation persists immediately
+- [x] `internal/config` — tests: round-trip, atomicity, fallback order
+- [x] `internal/util` — `Prune` — strip characters invalid in file names
+- [x] `internal/util` — `Prune` — strip the curated "doubtful" typographic set (`¿`, `™`, `—`, smart quotes)
+- [x] `internal/util` — `Prune` — trim leading and trailing dots
+- [x] `internal/util` — `AsUncIfLong` — `\\?\` extended-length form above 250 chars, Windows only
+- [x] `internal/util` — `RoundDown` — floor a time to a span boundary (10-minute buckets)
+- [x] `internal/util` — `ToXmlTime` — `XmlConvert.ToString(..., Utc)` equivalent
+- [x] `internal/util` — `CRC32` — checksum used for alias uniqueness
+- [x] `internal/util` — `HTMLToText` — strip comments/head/style/script, unwrap span/label, `<br>` to newlines
+- [x] `internal/util` — tests for every helper above, including edge cases
+- [x] `internal/progress` — `Message` type: item count, item increment, per-cent and per-mille increments
+- [x] `internal/progress` — `Reporter` — converts a continuous ratio into increments, remembers the last step
+- [x] `internal/progress` — `Close` emits the remainder so a bar always reaches 100%
+- [x] `internal/progress` — tests: increments are monotonic and sum to the total
 
 ---
 
