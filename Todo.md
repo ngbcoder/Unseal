@@ -143,6 +143,7 @@ departure is recorded here so it is a decision rather than an accident.
 | 6 | Windows only | Windows only for now | Same scope as the original. The hardware identity layer sits behind an interface so other platforms can be added later without touching the domain code, but they are not built, tested or shipped yet. |
 | 7 | Inno Setup installer and a `Setup.json` updater manifest | GoReleaser-style release workflow and the same manifest | Keeps the update channel identical to the original's. |
 | 8 | `EConversionState` ordinal order is semantically meaningful | Preserved exactly | The state machine depends on it. This is behaviour, not structure. |
+| 9 | The wizard and the main window are separate top-level windows | One window, the wizard replaces the main content | Rebuilding a changing list of windows on every frame made the windows fight each other: the directory picker opened the registration window, the window lost its place in the taskbar, and the wizard did not advance. One window removes the whole class of problem. |
 
 **Preserved without deviation** because they are protocol or behaviour, not
 structure: the ADP signing scheme, the voucher decryption derivation, the
@@ -404,6 +405,9 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 - [ ] `internal/ui` — stable row identifiers so sorting never loses the selection
 - [ ] `internal/ui` — profile dialogs — manage, rename, remove
 - [x] `internal/ui` — profile dialogs — new registration: create URL, open browser, paste redirect
+- [x] `internal/ui` — the region is detected from the system locale and preselected in the dropdown
+- [x] `internal/ui` — a Copy URL button, next to Create URL and Open in browser
+- [x] `internal/ui` — the wizard and the main window share one window, so nothing overlaps
 - [ ] `internal/ui` — profile dialogs — account alias, minimum 3 characters, unique by CRC32
 - [x] `internal/ui` — first-run wizard — profile, download directory, export decision, help
 - [x] `internal/ui` — file dialogs for the download and export directories
