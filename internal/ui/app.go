@@ -8,6 +8,8 @@ import (
 	"github.com/golang-gui/goui/theme/modern"
 	"github.com/golang-gui/goui/ui"
 	wui "github.com/golang-gui/goui/widgets/ui"
+
+	"github.com/ngbcoder/Unseal/internal/audible"
 )
 
 // AppID is the stable application identity.
@@ -17,45 +19,55 @@ const AppID = "com.audiamus.unseal"
 type appState struct {
 	// onboarding is the first-run wizard's state.
 	onboarding *onboardingState
-	// profile is the registration dialog's state.
-	profile *profileState
-	// showProfile says whether the registration dialog is open.
-	showProfile bool
+	// profiles are the registered devices.
+	profiles []*audible.Profile
 }
 
 // Run starts the desktop application.
 //
 // It must be called from main, never from a background goroutine.
 func Run() error {
-	state := &appState{
-		onboarding: &onboardingState{step: 0, total: 3},
-		profile:    newProfileState(),
-	}
+	state := &appState{onboarding: newOnboardingState()}
 
 	err := ui.Run(AppID, func(app ui.App) ui.RootView {
-		var windows []ui.WindowView
+		// The region is detected from the system on the first frame, once
+		// the interface language is available.
+		state.onboarding.detectRegion(app)
 
-		// The registration dialog floats above whatever else is open.
-		if state.showProfile {
-			windows = append(windows, profileWindow(state.profile, app))
-		}
-
-		// The onboarding wizard takes over the whole application until it
-		// is finished, so the two never overlap.
-		if state.onboarding != nil && !state.onboarding.completed {
-			windows = append(windows, wizardWindow(state, app))
+		// There is one window. The wizard replaces the main content until
+		// the setup is finished, so nothing ever overlaps and the window
+		// keeps its place in the taskbar and the alt-tab list.
+		var content ui.View
+		if state.onboarding.needsOnboarding() {
+			content = wizardView(state.onboarding, app, state.onRegistered)
 		} else {
-			windows = append(windows, mainWindow(app))
+			content = mainView(app, state)
 		}
 
 		return ui.Root().
 			StyleSheet(buildSheet(app)).
-			Windows(windows...)
+			Windows(
+				ui.Window("main").
+					Title("Unseal").
+					Chrome(ui.WindowChromeNative).
+					Size(1120, 760).
+					MinSize(760, 560).
+					Center(true).
+					Content(content),
+			)
 	})
 	if err != nil {
 		log.Printf("unseal: %v", err)
 	}
 	return err
+}
+
+// onRegistered is called when a device registration succeeds.
+func (s *appState) onRegistered(p *audible.Profile) {
+	s.profiles = append(s.profiles, p)
+	if s.onboarding != nil && s.onboarding.step == 0 {
+		s.onboarding.step = 1
+	}
 }
 
 // buildSheet builds the style sheet: the modern theme plus the styles this
@@ -103,22 +115,11 @@ func card(content ui.View) *ui.BorderBoxView {
 	return ui.BorderBox(content).Style("card")
 }
 
-// mainWindow is the application's main window.
-func mainWindow(app ui.App) ui.WindowView {
-	return ui.Window("main").
-		Title("Unseal").
-		Chrome(ui.WindowChromeIntegrated).
-		Size(1120, 760).
-		MinSize(820, 560).
-		Center(true).
-		Content(mainView(app))
-}
-
 // mainView is the content of the main window.
-func mainView(app ui.App) ui.View {
+func mainView(app ui.App, state *appState) ui.View {
 	return ui.VBox(
 		headerBar(app),
-		settingsRow(app),
+		settingsRow(app, state),
 		downloadQueue(app),
 		progressRow(app),
 		statusBar(app),
@@ -139,20 +140,29 @@ func headerBar(app ui.App) ui.View {
 }
 
 // settingsRow holds the three settings cards side by side.
-func settingsRow(app ui.App) ui.View {
+func settingsRow(app ui.App, state *appState) ui.View {
 	return ui.HBox(
-		profileGroup(app),
+		profileGroup(app, state),
 		downloadGroup(app),
 		exportGroup(app),
 	).Spacing(8).Padding(12)
 }
 
 // profileGroup is the profile settings card.
-func profileGroup(app ui.App) ui.View {
+func profileGroup(app ui.App, state *appState) ui.View {
+	name := "No profile selected"
+	if len(state.profiles) > 0 {
+		p := state.profiles[len(state.profiles)-1]
+		name = p.DeviceInfo.Name
+		if name == "" {
+			name = p.CustomerInfo.AccountID
+		}
+	}
+
 	return card(
 		ui.VBox(
 			ui.Label("Profile").Style("section-title"),
-			ui.Label("No profile selected").Style("muted"),
+			ui.Label(name).Style("muted"),
 			ui.Button("Profiles…").Style(modern.Flat),
 		).Spacing(6).Padding(12),
 	)
@@ -203,16 +213,16 @@ func progressRow(app ui.App) ui.View {
 	return card(
 		ui.VBox(
 			ui.HBox(
-				ui.Label("Download").Style("muted").MinWidth(72),
-				wui.ProgressBar(0),
+				ui.Label("Download").Style("muted").MinWidth(80),
+				wui.ProgressBar(0).MainWeight(1),
 			).Spacing(8),
 			ui.HBox(
-				ui.Label("Decrypt").Style("muted").MinWidth(72),
-				wui.ProgressBar(0),
+				ui.Label("Decrypt").Style("muted").MinWidth(80),
+				wui.ProgressBar(0).MainWeight(1),
 			).Spacing(8),
 			ui.HBox(
-				ui.Label("Export").Style("muted").MinWidth(72),
-				wui.ProgressBar(0),
+				ui.Label("Export").Style("muted").MinWidth(80),
+				wui.ProgressBar(0).MainWeight(1),
 			).Spacing(8),
 			ui.HBox(
 				ui.Button("Run").Style(modern.Primary),
