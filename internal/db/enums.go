@@ -12,22 +12,22 @@ type EConversionState int
 
 // The conversion states, in their semantically significant order.
 const (
-	StateUnknown         EConversionState = 0  // Not in the account's library anymore
-	StateRemote          EConversionState = 1  // Owned, nothing local yet
-	StateDownload        EConversionState = 2  // Staged for download (transient UI state)
-	StateLicenseGranted  EConversionState = 3  // License obtained, key/IV known
-	StateLicenseDenied   EConversionState = 4  // Audible refused the license
-	StateDownloading     EConversionState = 5  // Payload transfer in flight
-	StateDownloadError   EConversionState = 6  // Transfer failed
-	StateLocalLocked     EConversionState = 7  // Encrypted .aaxc is on disk
-	StateUnlocking       EConversionState = 8  // Decryption in flight
-	StateUnlockingFailed EConversionState = 9  // Decryption failed
-	StateLocalUnlocked   EConversionState = 10 // Decrypted .m4b is on disk
-	StateExported        EConversionState = 11 // .aax + sidecar JSON written
-	StateConverting      EConversionState = 12 // Export in flight
-	StateConverted       EConversionState = 13 // Fully exported
+	StateUnknown          EConversionState = 0  // Not in the account's library anymore
+	StateRemote           EConversionState = 1  // Owned, nothing local yet
+	StateDownload         EConversionState = 2  // Staged for download (transient UI state)
+	StateLicenseGranted   EConversionState = 3  // License obtained, key/IV known
+	StateLicenseDenied    EConversionState = 4  // Audible refused the license
+	StateDownloading      EConversionState = 5  // Payload transfer in flight
+	StateDownloadError    EConversionState = 6  // Transfer failed
+	StateLocalLocked      EConversionState = 7  // Encrypted .aaxc is on disk
+	StateUnlocking        EConversionState = 8  // Decryption in flight
+	StateUnlockingFailed  EConversionState = 9  // Decryption failed
+	StateLocalUnlocked    EConversionState = 10 // Decrypted .m4b is on disk
+	StateExported         EConversionState = 11 // .aax + sidecar JSON written
+	StateConverting       EConversionState = 12 // Export in flight
+	StateConverted        EConversionState = 13 // Fully exported
 	StateConvertedUnknown EConversionState = 14 // Exported artefact missing from disk
-	StateConversionError EConversionState = 15 // Export failed
+	StateConversionError  EConversionState = 15 // Export failed
 )
 
 // String returns the name of the state.
@@ -63,7 +63,7 @@ type ECodec int
 // The known codecs.
 const (
 	CodecUnknown ECodec = iota
-	CodecAAX4464 // aax_44_64
+	CodecAAX4464        // aax_44_64
 	CodecAAX44128
 	CodecAAX44192
 )
