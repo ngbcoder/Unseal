@@ -376,57 +376,6 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 - [ ] `internal/handoff` — the test parses the golden URIs and asserts the verb and the parameters
 - [ ] `internal/handoff` — the golden fixtures are the same files the receiver repository uses
 
-## M5 — Pipeline
-
-- [ ] `internal/pipeline` — job driver over a set of conversions
-- [ ] `internal/pipeline` — stage order: licence → download → decrypt → export
-- [ ] `internal/pipeline` — persist the conversion state after every transition
-- [ ] `internal/pipeline` — decide per conversion whether a download is needed from the persisted state
-- [ ] `internal/pipeline` — decide per conversion whether a decryption is needed
-- [ ] `internal/pipeline` — a higher requested quality forces download and decrypt
-- [ ] `internal/pipeline` — decryption semaphore, default 1, configurable
-- [ ] `internal/pipeline` — downloads serialised per book, decryption parallelised
-- [ ] `internal/pipeline` — cancellation checked before each book's licence step
-- [ ] `internal/pipeline` — export only once every part of a book is unlocked
-- [ ] `internal/pipeline` — download progress from byte counts
-- [ ] `internal/pipeline` — decrypt progress from media position
-- [ ] `internal/pipeline` — export progress from copy progress
-- [ ] `internal/pipeline` — reconciliation — walk every conversion and check the file on disk
-- [ ] `internal/pipeline` — reconciliation — `local_locked` → `.aaxc` → `remote`
-- [ ] `internal/pipeline` — reconciliation — `local_unlocked` → `.m4b` → `.aaxc` → `remote`
-- [ ] `internal/pipeline` — reconciliation — `exported` → `.aax` → download dir → `converted_unknown`
-- [ ] `internal/pipeline` — reconciliation — `converted` → any audio artefact in the destination
-- [ ] `internal/pipeline` — reconciliation — relocated files: find the file elsewhere and rewrite the path
-- [ ] `internal/pipeline` — reconciliation — missing payload: clear the stored file name
-- [ ] `internal/pipeline` — reconciliation — ask the user once, then apply to all
-- [ ] `internal/pipeline` — tests: state transitions, quality upgrade, reconciliation table
-
----
-
-## M6 — Security
-
-- [ ] `internal/secure` — AES-256 with a PBKDF2-HMAC-SHA256 derived key, 100 000 iterations
-- [ ] `internal/secure` — separate authentication and key salts
-- [ ] `internal/secure` — random IV per encryption
-- [ ] `internal/secure` — HMAC-SHA256 tag verified in constant time
-- [ ] `internal/secure` — payload layout `[authSalt 16][keySalt 16][iv 16][ciphertext][hmac 32]`
-- [ ] `internal/secure` — tests: round-trip, tamper detection, wrong key, malformed input
-- [ ] `internal/hw` — Windows CPU id via WMI `Win32_Processor.ProcessorID`
-- [ ] `internal/hw` — Windows motherboard serial via WMI SMBIOS, PNP device id as fallback
-- [ ] `internal/hw` — the identifier lookup sits behind an interface so other platforms can be added later
-- [ ] `internal/hw` — report a weak result when identifiers are unavailable
-- [ ] `internal/secure` — key derivation: `ROT13(userName) + cpuId + motherboardSerial`
-- [ ] `internal/secure` — configuration store — `Configuration.json` with a plaintext `Profiles` field
-- [ ] `internal/secure` — configuration store — encrypted `Secure` field, base64 payload
-- [ ] `internal/secure` — configuration store — read path: try without a token, force the token if encrypted
-- [ ] `internal/secure` — passphrase-based profile export and import for cross-machine migration
-- [ ] `internal/logging` — anonymiser — stable pseudonyms for usernames and passwords
-- [ ] `internal/logging` — replace the user's profile path with a placeholder
-- [ ] `internal/logging` — HTTP request and response dumps at level 4 and above
-- [ ] `internal/logging` — JSON payloads written shape-only, all strings replaced by length placeholders
-
----
-
 ## M7 — Command line and desktop interface
 
 - [ ] `cmd/unseal` — command tree with `run`, `register`, `library`, `download`, `export`, `config`, `profiles`, `doctor`, `version`
@@ -462,6 +411,57 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 - [ ] `internal/ui` — plain field changes trigger `app.RequestUpdate`
 - [ ] `internal/ui` — progress rendering from the progress stream
 - [ ] `internal/ui` — tests: HTML to text golden cases, state icon mapping, alias uniqueness
+## M6 — Security
+
+- [ ] `internal/secure` — AES-256 with a PBKDF2-HMAC-SHA256 derived key, 100 000 iterations
+- [ ] `internal/secure` — separate authentication and key salts
+- [ ] `internal/secure` — random IV per encryption
+- [ ] `internal/secure` — HMAC-SHA256 tag verified in constant time
+- [ ] `internal/secure` — payload layout `[authSalt 16][keySalt 16][iv 16][ciphertext][hmac 32]`
+- [ ] `internal/secure` — tests: round-trip, tamper detection, wrong key, malformed input
+- [ ] `internal/hw` — Windows CPU id via WMI `Win32_Processor.ProcessorID`
+- [ ] `internal/hw` — Windows motherboard serial via WMI SMBIOS, PNP device id as fallback
+- [ ] `internal/hw` — the identifier lookup sits behind an interface so other platforms can be added later
+- [ ] `internal/hw` — report a weak result when identifiers are unavailable
+- [ ] `internal/secure` — key derivation: `ROT13(userName) + cpuId + motherboardSerial`
+- [ ] `internal/secure` — configuration store — `Configuration.json` with a plaintext `Profiles` field
+- [ ] `internal/secure` — configuration store — encrypted `Secure` field, base64 payload
+- [ ] `internal/secure` — configuration store — read path: try without a token, force the token if encrypted
+- [ ] `internal/secure` — passphrase-based profile export and import for cross-machine migration
+- [ ] `internal/logging` — anonymiser — stable pseudonyms for usernames and passwords
+- [ ] `internal/logging` — replace the user's profile path with a placeholder
+- [ ] `internal/logging` — HTTP request and response dumps at level 4 and above
+- [ ] `internal/logging` — JSON payloads written shape-only, all strings replaced by length placeholders
+
+---
+
+## M5 — Pipeline
+
+- [ ] `internal/pipeline` — job driver over a set of conversions
+- [ ] `internal/pipeline` — stage order: licence → download → decrypt → export
+- [ ] `internal/pipeline` — persist the conversion state after every transition
+- [ ] `internal/pipeline` — decide per conversion whether a download is needed from the persisted state
+- [ ] `internal/pipeline` — decide per conversion whether a decryption is needed
+- [ ] `internal/pipeline` — a higher requested quality forces download and decrypt
+- [ ] `internal/pipeline` — decryption semaphore, default 1, configurable
+- [ ] `internal/pipeline` — downloads serialised per book, decryption parallelised
+- [ ] `internal/pipeline` — cancellation checked before each book's licence step
+- [ ] `internal/pipeline` — export only once every part of a book is unlocked
+- [ ] `internal/pipeline` — download progress from byte counts
+- [ ] `internal/pipeline` — decrypt progress from media position
+- [ ] `internal/pipeline` — export progress from copy progress
+- [ ] `internal/pipeline` — reconciliation — walk every conversion and check the file on disk
+- [ ] `internal/pipeline` — reconciliation — `local_locked` → `.aaxc` → `remote`
+- [ ] `internal/pipeline` — reconciliation — `local_unlocked` → `.m4b` → `.aaxc` → `remote`
+- [ ] `internal/pipeline` — reconciliation — `exported` → `.aax` → download dir → `converted_unknown`
+- [ ] `internal/pipeline` — reconciliation — `converted` → any audio artefact in the destination
+- [ ] `internal/pipeline` — reconciliation — relocated files: find the file elsewhere and rewrite the path
+- [ ] `internal/pipeline` — reconciliation — missing payload: clear the stored file name
+- [ ] `internal/pipeline` — reconciliation — ask the user once, then apply to all
+- [ ] `internal/pipeline` — tests: state transitions, quality upgrade, reconciliation table
+
+---
+
 ## M8 — Operations and release
 
 - [ ] `internal/update` — fetch the manifest from `res/Setup.json` in this repository
