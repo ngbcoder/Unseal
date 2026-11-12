@@ -15,7 +15,7 @@ layering enforced by import direction.
         ┌──────────────────────────────────────────────┐
    L5   │  app              cmd/unseal                 │  composition root
         ├──────────────────────────────────────────────┤
-   L4   │  ui               (Gio widgets)               │  presentation
+   L4   │  ui               (GOUI desktop widgets)     │  presentation
         ├──────────────────────────────────────────────┤
    L3   │  core  audible  decrypt  export  pipeline    │  domain
         ├──────────────────────────────────────────────┤

@@ -76,7 +76,7 @@ revision, commit time and dirty-tree flag into the binary, and
 | L1 | Shared contracts | `config`, `audible/model` | Types and DTOs shared across layers. |
 | L2 | Persistence | `db` | Entities, context, migrations. Knows nothing about HTTP or UI. |
 | L3 | Domain | `audible`, `decrypt`, `export`, `pipeline`, `core` | All protocol logic and orchestration. |
-| L4 | Presentation | `ui` | Gio widgets. Depends on L3 through interfaces only. |
+| L4 | Presentation | `ui` | GOUI desktop widgets. Depends on L3 through interfaces only. |
 | L5 | Composition root | `app`, `cmd/unseal` | Wiring, settings, startup sequence. |
 
 ---
@@ -113,7 +113,7 @@ unseal/
 │   ├── hw/                hardware identity per platform
 │   ├── logging/           leveled logging facility
 │   ├── pipeline/          download/decrypt/export orchestration
-│   ├── ui/                Gio desktop interface
+│   ├── ui/                GOUI desktop interface
 │   ├── util/              pure helpers
 │   └── version/           build identity
 ├── docs/                  architecture, ADRs, user manual

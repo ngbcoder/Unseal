@@ -52,7 +52,7 @@ in [`Todo.md`](Todo.md).
 | M4 | Decryption and export | planned |
 | M5 | Pipeline, state machine, reconciliation | planned |
 | M6 | Credential store encryption, hardware identity | planned |
-| M7 | Command line and Gio desktop interface | planned |
+| M7 | Command line and GOUI desktop interface | planned |
 | M8 | Self-update, diagnostics, CI and release | planned |
 
 ---
