@@ -378,17 +378,17 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 
 ## M7 — Command line and desktop interface
 
-- [ ] `cmd/unseal` — command tree with `run`, `register`, `library`, `download`, `export`, `config`, `profiles`, `doctor`, `version`
+- [x] `cmd/unseal` — command tree with `run`, `register`, `library`, `download`, `export`, `config`, `profiles`, `doctor`, `version`
 - [ ] `cmd/unseal` — global flags: `--log <n>`, `--config <path>`, `--profile <alias>`
-- [ ] `cmd/unseal` — `unseal doctor` — report ffmpeg availability, config paths, database health
-- [ ] `internal/ui` — `ui.Run` entry point from `main`, never from a goroutine
-- [ ] `internal/ui` — application id `com.audiamus.unseal`, stable across releases
-- [ ] `internal/ui` — Modern theme via `modern.FromSettings(app.Settings())`
+- [x] `cmd/unseal` — `unseal doctor` — report ffmpeg availability, config paths, database health
+- [x] `internal/ui` - `ui.Run` entry point from `main`, never from a goroutine
+- [x] `internal/ui` — application id `com.audiamus.unseal`, stable across releases
+- [x] `internal/ui` — Modern theme via `modern.FromSettings(app.Settings())`
 - [ ] `internal/ui` — design tokens — colours, spacing, typography as style values
-- [ ] `internal/ui` — main window — settings panels for profile, download and export
+- [x] `internal/ui` — main window — settings panels for profile, download and export
 - [ ] `internal/ui` — main window — download queue table, one row per conversion
-- [ ] `internal/ui` — main window — three progress bars: download, decrypt, export
-- [ ] `internal/ui` — main window — Run and Abort buttons
+- [x] `internal/ui` — main window — three progress bars: download, decrypt, export
+- [x] `internal/ui` — main window — Run and Abort buttons
 - [ ] `internal/ui` — main window — Run enabled only when a selection and the directories exist
 - [ ] `internal/ui` — library window — table with state, title, author, duration, year, narrator, series, genre, parts
 - [ ] `internal/ui` — library window — virtualised list so a large library stays responsive
@@ -410,7 +410,7 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 - [ ] `internal/ui` — background work results marshalled back with `app.Post`
 - [ ] `internal/ui` — plain field changes trigger `app.RequestUpdate`
 - [ ] `internal/ui` — progress rendering from the progress stream
-- [ ] `internal/ui` — tests: HTML to text golden cases, state icon mapping, alias uniqueness
+- [x] `internal/ui` — tests: HTML to text golden cases, state icon mapping, alias uniqueness
 ## M6 — Security
 
 - [ ] `internal/secure` — AES-256 with a PBKDF2-HMAC-SHA256 derived key, 100 000 iterations

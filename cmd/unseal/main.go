@@ -1,22 +1,10 @@
-// Command unseal is the entry point of the Unseal desktop application.
-//
-// Unseal is a standalone audiobook downloader and DRM remover for a personal
-// Audible library. It signs the user in through the browser, registers itself
-// as an Audible device, lists the purchased library, downloads the encrypted
-// payload, removes the DRM with the account-scoped keys Audible issued for
-// that account, and writes plain .m4b files.
-//
-// Usage:
-//
-//	unseal [command] [flags]
-//
-// Run "unseal help" for the list of commands.
 package main
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/ngbcoder/Unseal/internal/ui"
 	"github.com/ngbcoder/Unseal/internal/version"
 )
 
@@ -27,22 +15,57 @@ func main() {
 	}
 }
 
-// run is the testable entry point. It dispatches to the CLI parser once the
-// command tree exists (milestone M7); until then it only answers the
-// informational commands.
+// run dispatches to the command tree.
 func run(args []string) error {
-	if len(args) > 0 {
-		switch args[0] {
-		case "version", "--version", "-v":
-			fmt.Println(version.Current().String())
-			return nil
-		case "help", "--help", "-h":
-			printUsage()
-			return nil
-		}
+	if len(args) == 0 {
+		printUsage()
+		return nil
 	}
 
-	printUsage()
+	switch args[0] {
+	case "run":
+		return ui.Run()
+	case "register":
+		return notYetImplemented("register")
+	case "library":
+		return notYetImplemented("library")
+	case "download":
+		return notYetImplemented("download")
+	case "export":
+		return notYetImplemented("export")
+	case "config":
+		return notYetImplemented("config")
+	case "profiles":
+		return notYetImplemented("profiles")
+	case "doctor":
+		return doctor()
+	case "version", "--version", "-v":
+		fmt.Println(version.Current().Detail())
+		return nil
+	case "help", "--help", "-h":
+		printUsage()
+		return nil
+	default:
+		return fmt.Errorf("unknown command %q", args[0])
+	}
+}
+
+// notYetImplemented reports that a command exists but is not wired up yet.
+func notYetImplemented(name string) error {
+	return fmt.Errorf("%s is not implemented yet", name)
+}
+
+// doctor checks the environment and reports what it finds.
+func doctor() error {
+	fmt.Printf("Unseal %s\n", version.Current().Version)
+	fmt.Printf("  go      %s\n", version.Current().GoVersion)
+	fmt.Printf("  platform %s\n", version.Current().Platform)
+	fmt.Println()
+	fmt.Println("Dependencies:")
+	fmt.Println("  ffmpeg: (not checked yet)")
+	fmt.Println()
+	fmt.Println("Directories:")
+	fmt.Println("  (not resolved yet)")
 	return nil
 }
 
@@ -63,4 +86,11 @@ func printUsage() {
 	fmt.Println("  profiles   Manage registered device profiles")
 	fmt.Println("  doctor     Check the environment and dependencies")
 	fmt.Println("  version    Print version information")
+	fmt.Println()
+	fmt.Println("Global flags:")
+	fmt.Println("  --log <n>     Set the log level (0-5)")
+	fmt.Println("  --config <p>  Use an alternate configuration directory")
+	fmt.Println("  --profile <a> Select an account profile by alias")
 }
+
+
