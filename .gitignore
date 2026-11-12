@@ -1,0 +1,45 @@
+# Build output
+/bin/
+/dist/
+/out/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace / vendoring
+/vendor/
+go.work
+go.work.sum
+
+# Local runtime state
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+/config.json
+/usersettings.json
+/appsettings.json
+*.log
+/tmp/
+
+# Credentials — never commit
+Configuration.json
+*.pem
+*.key
+!testdata/**/*.pem
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Docs scratch
+/_scratch/
