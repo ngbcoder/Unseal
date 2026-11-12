@@ -250,56 +250,56 @@ and the legal stance.
 - [x] `internal/db` — merge duplicate author entries, preferring the real long ASIN
 - [x] `internal/db` — copy the database file before a destructive change
 - [x] `internal/db` — tests: document round-trip, tenancy isolation, aggregation, chapter tree, state transitions
-## M3 — Audible protocol
+## M3 — Audible protocol · DONE
 
-- [ ] `internal/audible/model` — library response DTOs (product, relationship, series, author)
-- [ ] `internal/audible/model` — license response DTOs (content licence, metadata, chapter info)
-- [ ] `internal/audible/model` — registration response DTOs (tokens, device info, customer info)
-- [ ] `internal/audible/model` — voucher DTO (key, IV, rules)
-- [ ] `internal/audible/model` — catalogue product DTO
-- [ ] `internal/audible/locale` — region → TLD and marketplace-id table (11 regions)
-- [ ] `internal/audible/locale` — pre-Amazon login path allowed for de, uk, us only
-- [ ] `internal/audible/login` — device serial: 40 chars from `A–Z a–z 0–9`
-- [ ] `internal/audible/login` — client id: hex encoding of `<serial>#A2CZJZGLK2JJVM`
-- [ ] `internal/audible/login` — PKCE verifier: 32 random bytes, URL-safe base64
-- [ ] `internal/audible/login` — PKCE challenge: `BASE64URL(SHA256(verifier))`, method `S256`
-- [ ] `internal/audible/login` — sign-in URL builder with the full OpenID Connect 2.0 query set
-- [ ] `internal/audible/login` — parse the redirected URL into an authorisation code
-- [ ] `internal/audible/sign` — ADP signature: `RoundDown(10 min)` → XML time
-- [ ] `internal/audible/sign` — signed data string `METHOD\nurl\ntime\nbody\nadpToken`
-- [ ] `internal/audible/sign` — SHA-256 digest, RSA PKCS#1 v1.5 signature over the digest
-- [ ] `internal/audible/sign` — signature header value `base64(sig):<time>`
-- [ ] `internal/audible/sign` — import the device private key from PEM
-- [ ] `internal/audible/sign` — headers `x-adp-token`, `x-adp-alg`, `x-adp-signature`
-- [ ] `internal/audible/sign` — tests: fixed vectors for the signed data string and signature
-- [ ] `internal/audible/client` — HTTP client with an explicit cookie jar
-- [ ] `internal/audible/client` — auto-redirect disabled
-- [ ] `internal/audible/client` — gzip/deflate decompression
-- [ ] `internal/audible/client` — per-host base addresses for `api.amazon.<tld>` and `api.audible.<tld>`
-- [ ] `internal/audible/register` — `POST /auth/register` with the documented request body
-- [ ] `internal/audible/register` — parse device info, customer info, bearer token, mac_dms token
-- [ ] `internal/audible/register` — extract the device private key (PEM) and the ADP token
-- [ ] `internal/audible/register` — extract website cookies and the store-authentication cookie
-- [ ] `internal/audible/token` — `POST /auth/token` refresh, form-encoded
-- [ ] `internal/audible/token` — header `x-amzn-identity-auth-domain`
-- [ ] `internal/audible/token` — skip the refresh when the token is valid for more than 5 minutes
-- [ ] `internal/audible/library` — `GET /1.0/library` with paging until an empty page
-- [ ] `internal/audible/library` — `purchased_after` from the newest purchase date plus 1 ms
-- [ ] `internal/audible/library` — `num_results=100`, `page`, fixed `response_groups` list
-- [ ] `internal/audible/library` — de-duplicate by ASIN, sort by purchase date
-- [ ] `internal/audible/catalog` — `GET /1.0/catalog/products/{asin}` back-fill
-- [ ] `internal/audible/license` — `POST /1.0/content/{asin}/licenserequest`
-- [ ] `internal/audible/license` — handle `Granted` and `Denied`, log the denial reasons
-- [ ] `internal/audible/license` — **voucher decryption** — `SHA256(ASCII(deviceType+serial+accountId+asin))`
-- [ ] `internal/audible/license` — voucher decryption — key and IV are the two halves of the digest
-- [ ] `internal/audible/license` — voucher decryption — AES-256-CBC, no padding, truncate at the first 0x00
-- [ ] `internal/audible/license` — voucher decryption — tests with a fixed vector
-- [ ] `internal/audible/license` — extract the offline URL, content size and content format
-- [ ] `internal/audible/license` — extract the chapter tree, brand intro/outro and runtime
-- [ ] `internal/audible/download` — `GET offline_url` with the Audible user agent
-- [ ] `internal/audible/download` — stream to `.aaxc` with progress reported in absolute bytes
-- [ ] `internal/audible/download` — validate the written size against `content_size_in_bytes`
-- [ ] `internal/audible/download` — cancellation checked per buffer chunk
+- [x] `internal/audible/model` — library response DTOs (product, relationship, series, author)
+- [x] `internal/audible/model` — license response DTOs (content licence, metadata, chapter info)
+- [x] `internal/audible/model` — registration response DTOs (tokens, device info, customer info)
+- [x] `internal/audible/model` — voucher DTO (key, IV, rules)
+- [x] `internal/audible/model` — catalogue product DTO
+- [x] `internal/audible/locale` — region → TLD and marketplace-id table (11 regions)
+- [x] `internal/audible/locale` — pre-Amazon login path allowed for de, uk, us only
+- [x] `internal/audible/login` — device serial: 40 chars from `A–Z a–z 0–9`
+- [x] `internal/audible/login` — client id: hex encoding of `<serial>#A2CZJZGLK2JJVM`
+- [x] `internal/audible/login` — PKCE verifier: 32 random bytes, URL-safe base64
+- [x] `internal/audible/login` — PKCE challenge: `BASE64URL(SHA256(verifier))`, method `S256`
+- [x] `internal/audible/login` — sign-in URL builder with the full OpenID Connect 2.0 query set
+- [x] `internal/audible/login` — parse the redirected URL into an authorisation code
+- [x] `internal/audible/sign` — ADP signature: `RoundDown(10 min)` → XML time
+- [x] `internal/audible/sign` — signed data string `METHOD\nurl\ntime\nbody\nadpToken`
+- [x] `internal/audible/sign` — SHA-256 digest, RSA PKCS#1 v1.5 signature over the digest
+- [x] `internal/audible/sign` — signature header value `base64(sig):<time>`
+- [x] `internal/audible/sign` — import the device private key from PEM
+- [x] `internal/audible/sign` — headers `x-adp-token`, `x-adp-alg`, `x-adp-signature`
+- [x] `internal/audible/sign` — tests: fixed vectors for the signed data string and signature
+- [x] `internal/audible/client` — HTTP client with an explicit cookie jar
+- [x] `internal/audible/client` — auto-redirect disabled
+- [x] `internal/audible/client` — gzip/deflate decompression
+- [x] `internal/audible/client` — per-host base addresses for `api.amazon.<tld>` and `api.audible.<tld>`
+- [x] `internal/audible/register` — `POST /auth/register` with the documented request body
+- [x] `internal/audible/register` — parse device info, customer info, bearer token, mac_dms token
+- [x] `internal/audible/register` — extract the device private key (PEM) and the ADP token
+- [x] `internal/audible/register` — extract website cookies and the store-authentication cookie
+- [x] `internal/audible/token` — `POST /auth/token` refresh, form-encoded
+- [x] `internal/audible/token` — header `x-amzn-identity-auth-domain`
+- [x] `internal/audible/token` — skip the refresh when the token is valid for more than 5 minutes
+- [x] `internal/audible/library` — `GET /1.0/library` with paging until an empty page
+- [x] `internal/audible/library` — `purchased_after` from the newest purchase date plus 1 ms
+- [x] `internal/audible/library` — `num_results=100`, `page`, fixed `response_groups` list
+- [x] `internal/audible/library` — de-duplicate by ASIN, sort by purchase date
+- [x] `internal/audible/catalog` — `GET /1.0/catalog/products/{asin}` back-fill
+- [x] `internal/audible/license` — `POST /1.0/content/{asin}/licenserequest`
+- [x] `internal/audible/license` — handle `Granted` and `Denied`, log the denial reasons
+- [x] `internal/audible/license` — **voucher decryption** — `SHA256(ASCII(deviceType+serial+accountId+asin))`
+- [x] `internal/audible/license` — voucher decryption — key and IV are the two halves of the digest
+- [x] `internal/audible/license` — voucher decryption — AES-256-CBC, no padding, truncate at the first 0x00
+- [x] `internal/audible/license` — voucher decryption — tests with a fixed vector
+- [x] `internal/audible/license` — extract the offline URL, content size and content format
+- [x] `internal/audible/license` — extract the chapter tree, brand intro/outro and runtime
+- [x] `internal/audible/download` — `GET offline_url` with the Audible user agent
+- [x] `internal/audible/download` — stream to `.aaxc` with progress reported in absolute bytes
+- [x] `internal/audible/download` — validate the written size against `content_size_in_bytes`
+- [x] `internal/audible/download` — cancellation checked per buffer chunk
 
 ---
 
