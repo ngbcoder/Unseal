@@ -33,7 +33,7 @@ uploaded to open servers, torrents or any mass-distribution channel.
 |-------|-----------|-----|
 | Language | Go 1.26.4 | Matches the rest of the workspace; single static binary |
 | **Constraint** | **`CGO_ENABLED=0` everywhere** | No cgo toolchain needed to build, cross-compilation is trivial, no gcc on the build machine |
-| UI | `gioui.org` v0.10.3 | Pure Go, immediate-mode desktop GUI |
+| UI | `github.com/golang-gui/goui` v0.4.0 | Native desktop GUI for Windows, macOS and Linux. No cgo — native APIs are loaded at runtime through purego. MIT licensed. |
 | Storage | `go.etcd.io/bbolt` v1.5.0 | Pure Go embedded KV store; document-per-book; no ORM, no SQL, no migrations |
 | HTTP | stdlib `net/http` | Explicit cookie jar, auto-redirect disabled |
 | Crypto | stdlib `crypto/*`, `golang.org/x/crypto` | `crypto/pbkdf2` is stdlib since Go 1.24 |
@@ -135,7 +135,7 @@ departure is recorded here so it is a decision rather than an accident.
 |---|---|---|---|
 | 1 | EF Core entities over 15 SQL tables, with migrations | One nested document per book in a bbolt bucket | A fresh Go app has no legacy database to migrate, and the access patterns are document reads and writes, not joins. Removes the ORM, the migration machinery and the composite tenancy key. |
 | 2 | `Conversion.AccountId + Region` is the tenancy key | A separate bucket per account and region | Makes the tenancy implicit in the bucket instead of a column pair repeated in every query. The same title may exist independently per account, which is simpler than sharing a `Book` row across accounts. |
-| 3 | WinForms user interface | Gio | Gio is pure Go and keeps the build CGO-free. |
+| 3 | WinForms user interface | GOUI — native desktop GUI, no cgo on any of the three platforms | Gio and Fyne both need cgo for their windowing and GL backends on Linux and macOS. GOUI loads the native APIs at runtime through purego, so the whole application builds with `CGO_ENABLED=0` everywhere. |
 | 4 | `AAXClean` NuGet package decrypts in-process | ffmpeg `aax` demuxer behind a `Decryptor` interface | Go has no AAXClean equivalent. The interface keeps a pure-Go backend possible later. |
 | 5 | Configuration encrypted with a hardware-derived key | Same scheme, plus passphrase-based export and import | The original's key is machine-bound, so a profile cannot move between machines. |
 | 6 | Windows only | Windows, Linux and macOS | Go makes it cheap. The hardware identity layer is isolated per platform. |
@@ -168,7 +168,7 @@ and the legal stance.
 - [x] `internal/version/version_test.go`
 - [x] `cmd/unseal/main.go` — entry point, usage banner, `version`/`help`
 - [x] `go build ./...`, `go vet ./...`, `go test ./...` all clean
-- [x] Verified the dependency stack compiles with `CGO_ENABLED=0` for windows, linux and darwin
+- [x] Verified GOUI v0.4.0, bbolt and `golang.org/x/net/html` compile with `CGO_ENABLED=0` for windows/amd64, linux/amd64 and darwin/arm64
 - [x] GitHub repository `ngbcoder/Unseal` created (public), `origin` configured
 - [x] First push to `origin/main`
 
@@ -385,32 +385,36 @@ and the legal stance.
 - [ ] `cmd/unseal` — command tree with `run`, `register`, `library`, `download`, `export`, `config`, `profiles`, `doctor`, `version`
 - [ ] `cmd/unseal` — global flags: `--log <n>`, `--config <path>`, `--profile <alias>`
 - [ ] `cmd/unseal` — `unseal doctor` — report ffmpeg availability, config paths, database health
-- [ ] `internal/ui` — Gio window shell and layout
-- [ ] `internal/ui` — design tokens — colours, spacing, typography
+- [ ] `internal/ui` — `ui.Run` entry point from `main`, never from a goroutine
+- [ ] `internal/ui` — application id `com.audiamus.unseal`, stable across releases
+- [ ] `internal/ui` — Modern theme via `modern.FromSettings(app.Settings())`
+- [ ] `internal/ui` — design tokens — colours, spacing, typography as style values
 - [ ] `internal/ui` — main window — settings panels for profile, download and export
-- [ ] `internal/ui` — main window — download queue grid, one row per conversion
+- [ ] `internal/ui` — main window — download queue table, one row per conversion
 - [ ] `internal/ui` — main window — three progress bars: download, decrypt, export
 - [ ] `internal/ui` — main window — Run and Abort buttons
 - [ ] `internal/ui` — main window — Run enabled only when a selection and the directories exist
-- [ ] `internal/ui` — library window — grid with state, title, author, duration, year, narrator, series, genre, parts
+- [ ] `internal/ui` — library window — table with state, title, author, duration, year, narrator, series, genre, parts
+- [ ] `internal/ui` — library window — virtualised list so a large library stays responsive
 - [ ] `internal/ui` — library window — filter by adult products and hide unavailable
 - [ ] `internal/ui` — library window — sort by the configured initial sorting
 - [ ] `internal/ui` — library window — rows in the `unknown` state are not selectable
-- [ ] `internal/ui` — library window — read-only metadata panel
-- [ ] `internal/ui` — library window — cover image
+- [ ] `internal/ui` — library window — split view with a read-only metadata panel
+- [ ] `internal/ui` — library window — cover image via `icon.NewImage` from the cached file
 - [ ] `internal/ui` — library window — publisher summary rendered as plain text
 - [ ] `internal/ui` — download staging — add selected, remove selected, remove all
 - [ ] `internal/ui` — download staging — staged rows highlighted, state icon in the first column
 - [ ] `internal/ui` — download staging — one row per component for multi-part books
+- [ ] `internal/ui` — stable row identifiers so sorting never loses the selection
 - [ ] `internal/ui` — profile dialogs — manage, rename, remove
 - [ ] `internal/ui` — profile dialogs — new registration: create URL, open browser, paste redirect
 - [ ] `internal/ui` — profile dialogs — account alias, minimum 3 characters, unique by CRC32
 - [ ] `internal/ui` — first-run wizard — profile, download directory, export decision, help
+- [ ] `internal/ui` — file dialogs for the download and export directories
+- [ ] `internal/ui` — background work results marshalled back with `app.Post`
+- [ ] `internal/ui` — plain field changes trigger `app.RequestUpdate`
 - [ ] `internal/ui` — progress rendering from the progress stream
 - [ ] `internal/ui` — tests: HTML to text golden cases, state icon mapping, alias uniqueness
-
----
-
 ## M8 — Operations and release
 
 - [ ] `internal/update` — fetch the manifest from `res/Setup.json` in this repository
@@ -437,6 +441,13 @@ and the legal stance.
 
 ## Known gaps
 
+- [ ] **linux/arm64 does not build with GOUI v0.4.0.** The `platform/linux/libs/libc`
+      bindings reference `syscall.SYS_PIPE` and `syscall.SYS_POLL`, which the Go
+      standard library only defines on linux/amd64. Compiling for linux/arm64
+      fails with `undefined: syscall.SYS_PIPE`. windows/amd64, linux/amd64 and
+      darwin/arm64 all build with `CGO_ENABLED=0`. This looks like an upstream
+      bug worth reporting to golang-gui/goui; until it is fixed, linux/arm64 is
+      not a supported target.
 - [ ] **ffmpeg is an external runtime dependency.** The C# original had none
       (AAXClean was in-process). Unseal needs a bootstrap downloader so that
       ffmpeg is never a manual prerequisite.
@@ -444,14 +455,16 @@ and the legal stance.
       configuration key derives from machine identifiers, so a profile encrypted
       on one machine cannot be decrypted on another. The export/import command
       in M6 addresses this.
-- [ ] **Gio needs OpenGL 3.2 or later.** Some virtual machines and remote
-      desktop sessions have no GL. A startup capability check with a clear
-      error is required.
+- [ ] **Linux needs native libraries at runtime.** The build stays cgo-free, but
+      a Linux binary requires X11, GL, GLib, Fontconfig and Pango/Cairo present
+      on the machine. Wayland sessions need XWayland.
+- [ ] **GOUI v0.4.0 is young.** It was published on 2026-10-26 and its API is
+      still moving, so the interface layer will need occasional adjustment.
 - [ ] **Audible's protocol can change server-side without notice.** The Go
       ecosystem has far fewer reference implementations than C#, so each
       protocol change has to be derived from captured traffic.
 - [ ] **The user interface can only be tested by hand.** The pipeline and
-      crypto layers get real unit tests; the Gio layer gets golden-image and
+      crypto layers get real unit tests; the GOUI layer gets golden-image and
       model tests.
 
 ---

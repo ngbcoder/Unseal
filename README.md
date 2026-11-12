@@ -135,7 +135,7 @@ depends on the user interface.
 | L1 | `config`, `audible/model` | Shared contracts and data transfer objects. |
 | L2 | `db` | Persistence. Knows nothing about HTTP or the UI. |
 | L3 | `audible`, `decrypt`, `export`, `pipeline`, `core` | Domain and application logic. |
-| L4 | `ui` | User interface widgets. Depends on L3 through interfaces only. |
+| L4 | `ui` | GOUI desktop widgets. Depends on L3 through interfaces only. |
 | L5 | `app`, `cmd/unseal` | Composition root and entry point. |
 
 See [`docs/architecture.md`](docs/architecture.md) for the detail.

@@ -57,7 +57,7 @@ the protocol code testable without a display and the GUI code replaceable.
 | `export` | The `.aax` interchange format and its sidecar JSON files. |
 | `pipeline` | The state machine, stage orchestration, throttling, progress and reconciliation. |
 | `core` | The domain facade the user interface talks to. |
-| `ui` | The Gio desktop interface. |
+| `ui` | The GOUI desktop interface: windows, tables, split views, dialogs. |
 | `app` | The composition root: wiring, settings, startup sequence. |
 
 ---
@@ -171,13 +171,21 @@ and ships as a single static binary with no C toolchain anywhere.
 
 ### 3.7 The user interface never blocks and never races
 
-Long-running work — library sync, downloads, decryption — runs off the
-interface goroutine. Results travel back through a single update channel and
-are applied on the interface goroutine, which replaces the original's
-`AffineSynchronizationContext` with the Go idiom.
+The interface is built with [GOUI](https://github.com/golang-gui/goui), a native
+desktop GUI toolkit for Go. Unlike Gio and Fyne, GOUI loads the platform's
+native APIs at runtime through purego, so the application builds with
+`CGO_ENABLED=0` on Windows, Linux and macOS alike.
 
-The domain layer never mutates an entity that the interface is currently
-displaying from a background goroutine.
+The interface is declarative. Views are ordinary Go values that may be rebuilt
+on every frame, while the framework retains the underlying widgets. Durable
+state lives in structures the caller owns, never inside a build closure.
+
+Long-running work — library sync, downloads, decryption — runs off the
+interface goroutine. Results travel back through `app.Post` and are applied on
+the interface goroutine, which replaces the original's
+`AffineSynchronizationContext` with the Go idiom. The domain layer never
+mutates an entity that the interface is currently displaying from a background
+goroutine.
 
 ### 3.8 Progress is increments, not absolutes
 
