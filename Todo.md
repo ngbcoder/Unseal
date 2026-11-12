@@ -306,13 +306,13 @@ and the legal stance.
 ## M4 — Decrypt and export
 
 - [ ] `internal/decrypt` — `Decryptor` interface: input, output, key, IV, progress, cancellation
-- [ ] `internal/decrypt/ffmpeg` — locate ffmpeg: `UNSEAL_FFMPEG` env → `PATH` → bundled directory
-- [ ] `internal/decrypt/ffmpeg` — invoke with `-audible_key <hex>` and `-audible_iv <hex>`
-- [ ] `internal/decrypt/ffmpeg` — `-i in.aaxc -c copy out.m4b`
-- [ ] `internal/decrypt/ffmpeg` — parse progress from stderr
-- [ ] `internal/decrypt/ffmpeg` — propagate cancellation as a process kill
-- [ ] `internal/decrypt/ffmpeg` — surface a clear error when ffmpeg is missing
-- [ ] `internal/decrypt` — report the audio channel count after conversion
+- [x] `internal/decrypt/ffmpeg` — locate ffmpeg: `UNSEAL_FFMPEG` env → `PATH` → bundled directory
+- [x] `internal/decrypt/ffmpeg` — invoke with `-audible_key <hex>` and `-audible_iv <hex>`
+- [x] `internal/decrypt/ffmpeg` — `-i in.aaxc -c copy out.m4b`
+- [ ] `internal/decrypt/ffmpeg` — parse progress from the -progress pipe
+- [x] `internal/decrypt/ffmpeg` — propagate cancellation as a process kill
+- [x] `internal/decrypt/ffmpeg` — surface a clear error when ffmpeg is missing
+- [x] `internal/decrypt` — report the audio channel count after conversion
 - [ ] `internal/decrypt` — append the `_Mono` / `_Stereo` suffix and persist it
 - [ ] `internal/export` — copy `.m4b` to `<exportDir>\<name>.aax`
 - [ ] `internal/export` — record the exported `.aax` path on the conversion, so the handoff can find it
@@ -405,7 +405,7 @@ The receiver is the separately developed `github.com/ngbcoder/AAXAudioConverter`
 - [ ] `internal/ui` — profile dialogs — manage, rename, remove
 - [ ] `internal/ui` — profile dialogs — new registration: create URL, open browser, paste redirect
 - [ ] `internal/ui` — profile dialogs — account alias, minimum 3 characters, unique by CRC32
-- [ ] `internal/ui` — first-run wizard — profile, download directory, export decision, help
+- [x] `internal/ui` — first-run wizard — profile, download directory, export decision, help
 - [ ] `internal/ui` — file dialogs for the download and export directories
 - [ ] `internal/ui` — background work results marshalled back with `app.Post`
 - [ ] `internal/ui` — plain field changes trigger `app.RequestUpdate`
